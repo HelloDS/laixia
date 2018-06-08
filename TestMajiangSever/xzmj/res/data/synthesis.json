@@ -1,0 +1,17 @@
+[
+  {
+    "SynthesisId": 30056,
+    "ItemID": 60005,
+    "Num": 30
+  },
+  {
+    "SynthesisId": 30055,
+    "ItemID": "60002|60003",
+    "Num": "200|1"
+  },
+  {
+    "SynthesisId": 30054,
+    "ItemID": 60001,
+    "Num": 100
+  }
+]

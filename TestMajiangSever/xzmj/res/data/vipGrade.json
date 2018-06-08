@@ -1,0 +1,30 @@
+[
+{
+	"NowLevel": 0,
+	"NextVIPExperience": 0
+},
+{
+	"NowLevel": 1,
+	"NextVIPExperience": 1
+},
+{
+	"NowLevel": 2,
+	"NextVIPExperience": 30
+},
+{
+	"NowLevel": 3,
+	"NextVIPExperience": 100
+},
+{
+	"NowLevel": 4,
+	"NextVIPExperience": 200
+},
+{
+	"NowLevel": 5,
+	"NextVIPExperience": 400
+},
+{
+	"NowLevel": 6,
+	"NextVIPExperience": 800
+}
+]

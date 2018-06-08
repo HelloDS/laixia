@@ -1,0 +1,27 @@
+[
+    {
+		"gameId":"1",
+		"displayName":"斗地主",
+		"folderName":"ddz",
+		"icon":"images/zhishidoudizhu.png",
+		"type":"game",
+		"updateUrl":"http://127.0.0.1/update/ddz"
+    },
+    {
+        "gameId":"1002",
+		"displayName":"干瞪眼",
+		"folderName":"gdy",
+		"icon":"images/gandengyan.png",
+		"type":"game",
+		"updateUrl":"http://127.0.0.1/update/gdy"
+    },
+	{
+		"gameId":"1003",
+		"displayName":"血战麻将",
+		"folderName":"xzmj",
+		"icon":"images/xuezhandaodi.png",
+		"type":"game",
+		"updateUrl":"http://127.0.0.1/update/ddz"
+    }
+   
+]

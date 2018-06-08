@@ -1,0 +1,149 @@
+[
+    {
+        "WindowName":"LobbyWindow",
+        "Resource":"lobby/LobbyMainLayer.csb"
+    },
+    {
+        "WindowName":"LoadingWindow",
+        "Resource":"new_ui/Loading.csb"
+    },
+    {
+        "WindowName":"TPBind_Complete",
+        "Resource":"new_ui/Bind_Complete.csb"
+    },
+    {
+        "WindowName":"GameListWindow",
+        "Resource":"new_ui/GameList.csb"
+    },
+    {
+        "WindowName":"GameListWindow_detail",
+        "Resource":"new_ui/Game__Detail.csb"
+    },
+    {
+        "WindowName":"CardTableDialog",
+        "Resource":"new_ui/PokerDeskWindow.csb"
+    },  
+    {
+        "WindowName":"ShopWindow",
+        "Resource":"new_ui/MallWindow.csb"
+    },
+	
+	{
+        "WindowName":"GameStTageWait",
+        "Resource":"new_ui/GameStTageWait.csb"
+    },
+	
+	{
+        "WindowName":"RankingListWindow",
+        "Resource":"new_ui/RankingListWindows.csb"
+    },
+	{
+        "WindowName":"FastInput",
+        "Resource":"new_ui/chat.csb"
+    },
+	{
+        "WindowName":"GameListJoin",
+        "Resource":"new_ui/Start_Prompt.csb"
+    },
+    {
+        "WindowName":"GameHelp",
+        "Resource":"new_ui/GameRule.csb"
+    },
+    {
+        "WindowName":"GameListRanking",
+        "Resource":"new_ui/GameMatchRanking.csb"       
+    },
+	
+	{
+        "WindowName":"GameListResult",
+        "Resource":"new_ui/GamePrize.csb"
+    },
+	{
+        "WindowName":"PokerResultWindow_SelfBuilding",
+        "Resource":"new_ui/PokerResultWindow_SelfBuilding.csb"
+    },	
+  	{
+        "WindowName":"GameListQuitSelected",
+        "Resource":"new_ui/GameTishiSelect.csb"
+    },
+	{
+        "WindowName":"GameListWindow_Resurrection",
+        "Resource":"new_ui/GameListWindow_Resurrection.csb"
+    },
+    {
+        "WindowName":"LobbyBottomWindow",
+        "Resource":"new_ui/LobbyBottomWindow.csb"
+    }, 
+    {
+        "WindowName":"TPFastrecharge",
+        "Resource":"new_ui/GameFastrecharge.csb"
+    },
+    {
+        "WindowName":"GameListWaitting",
+        "Resource":"new_ui/MatchWaitting.csb"
+    },
+    {
+        "WindowName":"PokerAccountWindow",
+        "Resource":"new_ui/PokerResultWindow.csb"
+    },
+    {
+        "WindowName":"Confirm_Quit",
+        "Resource":"new_ui/Confirm_Quit.csb"
+    },        
+    {
+        "WindowName":"GameListStartPrompt",
+        "Resource":"new_ui/GameStart.csb"
+    },      
+    {
+        "WindowName":"GameRoomGround",
+        "Resource":"games/ddz/new_ui/RoomGround.csb"
+    },      
+     
+    {
+        "WindowName":"SinglePokerDeskWindow",
+        "Resource":"new_ui/PokerDeskWindow.csb"
+    },      
+    {
+        "WindowName":"TPRoomLevelDown",
+        "Resource":"new_ui/RoomLevelDown.csb"
+    },
+    {
+        "WindowName":"TrumpetWindow",
+        "Resource":"new_ui/Trumpet.csb"
+    },       
+
+	{
+        "WindowName":"TPFirstCharge",
+        "Resource":"new_ui/GamePacksFirstrecharge.csb"
+    },
+  
+
+    {
+        "WindowName":"NewPokerDeskWindow",
+        "Resource":"new_ui/PokerDeskWindow.csb"
+    }
+	,
+	{
+        "WindowName":"LobbyTopWindow",
+        "Resource":"new_ui/LobbyTopWindow.csb"
+    }
+	,
+	{
+        "WindowName":"GameTypeWindow",
+        "Resource":"new_ui/GameType.csb"
+    }	,
+	
+	{
+        "WindowName":"TPSelfBuilding",
+        "Resource":"new_ui/selfBuilding.csb"
+    }	,
+	{
+        "WindowName":"TPGain",
+        "Resource":"new_ui/Obtain.csb"
+    }	,
+    {
+        "WindowName":"AppleDismissLayer",
+        "Resource":"new_ui/AppleDismiss.csb"
+    }	
+    
+]

@@ -1,0 +1,163 @@
+[   
+    {
+        "key": "LXG_USER_INFO",
+        "url": "http://47.93.102.58:9251/api/lxg/user/info"
+    },
+    {
+        "key": "LXG_MATCH_ENROLL_LIST",
+        "url": "http://47.93.102.58:9353/api/match/show"
+    },
+     {
+        "key": "LXG_GAME_LIST",
+        "url": "http://47.93.102.58:9351/api/lxg/match/game_list"
+    },
+    {
+        "key": "LXG_USER_PHONE_GET",
+        "url": "http://47.93.102.58:9251/api/lxg/user/get_phone"
+    },
+    {
+        "key": "LXG_USER_PHONE_BIND",
+        "url": "http://47.93.102.58:9251/api/lxg/user/bind_phone"
+    },
+    {
+        "key": "LXG_USER_COIN",
+        "url": "http://testservice.h7tuho5mf.cn:22060/coin/BillCoinService/QueryBalance"
+    },
+    {
+        "key": "MEDUSA_REVIVE_CARD_DECR",
+        "url": "http://testservice.h7tuho5mf.cn/ctl/trivia/game/revive/card/decr"
+    },
+    {
+        "key": "LXG_USER_BIND_PHONE",
+        "url": "http://47.93.102.58:9251/api/lxg/user/bind_phone"
+    },
+    {
+        "key": "MEDUSA_REVIVE_CARD_ADD",
+        "url": "http://testservice.h7tuho5mf.cn/ctl/trivia/game/revive/card/add"
+    },
+    {
+        "key": "LXG_NOTICE_GET",
+        "url": "http://47.93.102.58:9204/api/lxg/notice/get_notice"
+    },
+    {
+        "key": "LXG_CATEGROY_GET",
+        "url": "http://47.93.102.58:9201/api/lxg/categroy/get_categroy"
+    },
+    {
+        "key": "LXG_BAGPACK_GET",
+        "url": "http://47.93.102.58:9202/api/lxg/bagpack/get_user_bagpack"
+    },
+    {
+        "key": "LXG_BAGPACK_USE",
+        "url": "http://47.93.102.58:9202/api/lxg/bagpack/use_user_bagpack"
+    },
+    {
+        "key": "LXG_SHOP_GET_ITEM",
+        "url": "http://47.93.102.58:9203/api/lxg/shop/get_shop_item"
+    },
+    {
+        "key": "LXG_SHOP_USE_ITEM",
+        "url": "http://47.93.102.58:9203/api/lxg/shop/use_shop_item"
+    },
+    {
+        "key": "LXG_MAIL_COLLECTIONS",
+        "url": "http://47.93.102.58:9230/api/lxg/mail/collections"
+    },
+    {
+        "key": "LXG_MAIL_READ",
+        "url": "http://47.93.102.58:9230/api/lxg/mail/read_mail"
+    },
+    {
+        "key": "LXG_MAIL_CHECK_NEW",
+        "url": "http://47.93.102.58:9230/api/lxg/mail/check_new"
+    },
+    {
+        "key": "LXG_SIGN_COLLECTIONS",
+        "url": "http://47.93.102.58:9231/api/lxg/sign/collections"
+    },
+    {
+        "key": "LXG_SIGN_PLAYER",
+        "url": "http://47.93.102.58:9231/api/lxg/sign/player"
+    },
+    {
+        "key": "LXG_COUNT_INFO",
+        "url": "http://47.93.102.58:9233/api/lxg/count/info"
+    },
+    {
+        "key": "LXG_COUNT_RANK",
+        "url": "http://47.93.102.58:9233/api/lxg/count/rank"
+    },
+    {
+        "key": "LXG_ACTIVE_COLLECTIONS",
+        "url": "http://47.93.102.58:9235/api/lxg/active/collections"
+    },
+    {
+        "key": "LXG_TASK_LAIDOU_ADD",
+        "url": "http://47.93.102.58:9237/task/laidou/add"
+    },
+	{
+        "key": "LXG_MATCH_ENROLL",
+		"url": "http://47.93.102.58:9353/api/lxg/match/enroll"
+	},
+    {
+        "key": "LXG_TASK_RELIEF_ADD",
+        "url": "http://47.93.102.58:9237/api/lxg/task/relief/add"
+    },
+    {
+        "key": "LXG_GAME_ENTER",
+        "url": "http://47.93.102.58:9353/api/lxg/game/enter"
+    },
+    {
+        "key": "LXG_MATCH_CANCEL_ENROLL",
+        "url": "http://47.93.102.58:9353/api/lxg/match/cancel_enroll"
+    },
+    {
+        "url": "http://47.93.102.58:9230/mail/clear_mail",
+        "key": "LXG_MAIL_CLEAR"
+    },
+    {
+        "url": "http://testservice.h7tuho5mf.cn/api/v1/verification_code",
+        "key": "MEDUSA_VERIFICATION_CODE"
+    },
+    {
+        "url": "http://testservice.h7tuho5mf.cn/api/v2/cash/account",
+        "key": "MEDUSA_CASH_ACCOUNT"
+    },
+    {
+        "url": "http://47.93.102.58:9353/api/lxg/match/user_num",
+        "key": "LXG_MATCH_USER_NUM"
+    },
+    {
+        "url": "http://47.93.102.58:9361/api/match_player/current_match_ins_id",
+        "key": "LXG_PLAYER_MATCH_STATE"
+    },
+    {
+        "url": "http://service.ddz.com/api/class/ddz",
+        "key": "LXG_MATCH_INFO"
+    },
+    {
+        "url": "http://47.93.102.58:9353/api/lxg/game/exit",
+        "key": "LXG_GAME_EXIT"
+    },
+    {
+        "url": "http://47.93.102.58:9361/api/match_player/quit_match",
+        "key": "LXG_PLAYER_MATCH_EXIT"
+    },
+    {
+        "url": "http://47.93.102.58:9361/api/match_player/enroll_list",
+        "key": "LXG_PLAYER_ENROLL_LIST"
+    },
+    {
+        "url": "http://47.93.102.58:9237/task/relief/add",
+        "key": "LXG_TASK_RELIEF_ADD"
+    },
+    {
+        "url": "http://47.93.102.58:9237/task/relief/get_relief_status",
+        "key": "LXG_TASK_RELIEF_STATUS"
+    },
+    {
+        "url": "http://47.93.102.58:9251/api/lxg/user/infos",
+        "key": "LXG_USER_INFOS"
+    }
+    
+]

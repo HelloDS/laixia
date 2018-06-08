@@ -1,0 +1,108 @@
+ItemID	PlatformID	ItemName	ItemType	UmitPrice	isPile	PileNum	isGiver	isCompose	isSell	ObtainItemIDList	ObtainItemCountList	isDisapear	isDelivery	DeliveryGameID	DeliveryFunctionID	EffTime	ExpireDate	ImagePath	ImageSmallPath	ItemDesc	
+1001	0	金币	1		1	5								0				new_ui/common/red_packet/bisaizhuanyongjinbi.png			
+1002	0	來豆	1		1	5								0				new_ui/common/new_common/laidou.png			
+1004	0	芝士币	1		1	5								0				new_ui/lobbywindow/zhishibi.png			
+1021	0	周卡	5		1	10								0				new_ui/common/red_packet/weekcard.png		每天可获得20000金币	
+1501	0	1红包	3		0					1001:10000		1		0				new_ui/common/red_packet/1.png		使用后请到微信公众号领取，也可兑换1万金币，请您注意查收	
+1502	0	2红包	3		0					1001:20000		1		0				new_ui/common/red_packet/2.png		使用后请到微信公众号领取，也可兑换2万金币，请您注意查收	
+1503	0	3红包	3		0					1001:30000		1		0				new_ui/common/red_packet/3.png		使用后请到微信公众号领取，也可兑换3万金币，请您注意查收	
+1504	0	5红包	3		0					1001:50000		1		0				new_ui/common/red_packet/5.png		使用后请到微信公众号领取，也可兑换5万金币，请您注意查收	
+1505	0	10红包	3		0					1001:100000		1		0				new_ui/common/red_packet/10.png		使用后请到微信公众号领取，也可兑换10万金币，请您注意查收	
+1506	0	30红包	3		0							1		0				new_ui/common/red_packet/30.png		使用后请到微信公众号领取，请您注意查收	
+1507	0	50红包	3		0							1		0				new_ui/common/red_packet/50.png		使用后请到微信公众号领取，请您注意查收	
+1508	0	100红包	3		0							1		0				new_ui/common/red_packet/100.png		使用后，将通过微信公众号自动为您发放100元红包，请您注意查收	
+1509	0	20红包	3		0							1		0				new_ui/common/red_packet/20.png		使用后请到微信公众号领取，请您注意查收	
+1510	0	200红包	3		0							1		0				new_ui/common/red_packet/200.png		使用后请到微信公众号领取，请您注意查收	
+1511	0	1元京东卡	5		0					1001:10000		1		0				new_ui/common/red_packet/JD1.png		使用后自动发送短信到您绑定的手机，也可兑换1万金币，请您注意查收	
+1512	0	2元京东卡	5		0					1001:20000		1		0				new_ui/common/red_packet/JD2.png		使用后自动发送短信到您绑定的手机，也可兑换2万金币，请您注意查收	
+1513	0	3元京东卡	5		0					1001:30000		1		0				new_ui/common/red_packet/JD3.png		使用后自动发送短信到您绑定的手机，也可兑换3万金币，请您注意查收	
+1514	0	5元京东卡	5		0					1001:50000		1		0				new_ui/common/red_packet/JD5.png		使用后自动发送短信到您绑定的手机，也可兑换5万金币，请您注意查收	
+1515	0	10元京东卡	5		0					1001:100000		1		0				new_ui/common/red_packet/JD10.png		使用后自动发送短信到您绑定的手机，也可兑换10万金币，请您注意查收	
+1516	0	30元京东卡	5		0					1001:300000		1		0				new_ui/common/red_packet/JD30.png		使用后自动发送短信到您绑定的手机，也可兑换30万金币，请您注意查收	
+1517	0	50元京东卡	5		0					1001:500000		1		0				new_ui/common/red_packet/JD50.png		使用后自动发送短信到您绑定的手机，也可兑换50万金币，请您注意查收	
+1518	0	100元京东卡	5		0							1		0				new_ui/common/red_packet/JD100.png		使用后自动发送短信到您绑定的手机，请您注意查收	
+1519	0	300元京东卡	5		0							1		0				new_ui/common/red_packet/JD300.png		使用后自动发送短信到您绑定的手机，请您注意查收	
+1520	0	500元京东卡	5		0							1		0				new_ui/common/red_packet/JD500.png		使用后自动发送短信到您绑定的手机，请您注意查收	
+1521	0	千元京东卡	5		0							1		0				new_ui/common/red_packet/JD1000.png		使用后自动发送短信到您绑定的手机，请您注意查收	
+2001	0	手机赛门票	2		1	100												new_ui/common/red_packet/iPhoneXmenpiao.png		用于报名OPPO手机赛。	
+2002	0	新春赛门票	2		1	999										21		new_ui/common/red_packet/hongbaosai.png		可用于报名新春红包赛。	
+2003	0	Mate赛门票	2		1	999										8		new_ui/common/red_packet/huaweimenpiao.png		专用于报名华为Mate手机大奖赛。	
+2004	0	元宵赛门票	2		1	999										22		new_ui/common/red_packet/yuanxiao.png		可用于报名元宵红包赛。	
+2005	0	大奖赛门票	2		1	999												new_ui/common/red_packet/dasaimenpiao.png		可用于报名大奖赛	
+2006	0	苹果赛门票	2		1	999												new_ui/common/red_packet/Apple_zhuanchang.png		可用于报名苹果专场赛	
+2007	0	电器赛门票	2		1	999												new_ui/common/red_packet/dianqimenpiao.png		可用于报名电器专场赛	
+2008	0	京东卡门票	2		1	999												new_ui/common/red_packet/JDTicket.png		可用于报名京东卡专场比赛	
+2009	0	复活卡门票	2		1	999												new_ui/common/red_packet/zhishifuhuo.png		可用于报名复活卡专场比赛	
+9998	0	iPhone-X	3		0							1		0				new_ui/common/red_packet/iPhoneX.png		请填写收货信息(需先在游戏和公众号绑定手机号)，奖品在发货后7日内天送达。有问题在公众号里联系客服。	
+9999	0	再来一次	9		0									0							
+13002	0	1元红包	5		0											7		new_ui/common/red_packet/1.png		完成目标后，可使用微信红包，使用需绑定手机号并绑定公众号	
+30002	0	Mate10	3		0							1						new_ui/common/red_packet/mate10_1.png		请填写收货信息(需先在游戏和公众号绑定手机号)，奖品在发货后7日内天送达。有问题在公众号里联系客服。	
+30003	0	iPad 32G	3		0							1						new_ui/common/red_packet/ipad_1.png		请填写收货信息(需先在游戏和公众号绑定手机号)，奖品在发货后7日内天送达。有问题在公众号里联系客服。	
+30004	0	空气净化器	3		0							1						new_ui/common/red_packet/mi_1.png		请填写收货信息(需先在游戏和公众号绑定手机号)，奖品在发货后7日内天送达。有问题在公众号里联系客服。	
+30005	0	Beats耳机	3		0							1						new_ui/common/red_packet/erji_1.png		请填写收货信息(需先在游戏和公众号绑定手机号)，奖品在发货后7日内天送达。有问题在公众号里联系客服。	
+30006	0	iPad Pro	3		0							1						new_ui/common/red_packet/iPad_Pro.png		请填写收货信息(需先在游戏和公众号绑定手机号)，奖品在发货后7日内天送达。有问题在公众号里联系客服。	
+30007	0	戴森吹风机	3		0							1						new_ui/common/red_packet/daisenchuifengji.png		请填写收货信息(需先在游戏和公众号绑定手机号)，奖品在发货后7日内天送达。有问题在公众号里联系客服。	
+30008	0	扫地机器人	3		0							1						new_ui/common/red_packet/Ecovacs.png		请填写收货信息(需先在游戏和公众号绑定手机号)，奖品在发货后7日内天送达。有问题在公众号里联系客服。	
+30009	0	九阳破壁机	3		0							1						new_ui/common/red_packet/Joyoung.png		请填写收货信息(需先在游戏和公众号绑定手机号)，奖品在发货后7日内天送达。有问题在公众号里联系客服。	
+30010	0	TCL 55寸电视	3		0							1						new_ui/common/red_packet/TCL_dianshi.png		请填写收货信息(需先在游戏和公众号绑定手机号)，奖品在发货后7日内天送达。有问题在公众号里联系客服。	
+30011	0	滚筒洗衣机	3		0							1						new_ui/common/red_packet/haier_xiyiji.png		请填写收货信息(需先在游戏和公众号绑定手机号)，奖品在发货后7日内天送达。有问题在公众号里联系客服。	
+30012	0	科沃斯扫地机器人	3		0							1						new_ui/common/red_packet/kewoshi_tuodiji.png		请填写收货信息(需先在游戏和公众号绑定手机号)，奖品在发货后7日内天送达。有问题在公众号里联系客服。	
+30013	0	小熊酸奶机	3		0							1						new_ui/common/red_packet/xiaoxiong_zhazhiji.png		请填写收货信息(需先在游戏和公众号绑定手机号)，奖品在发货后7日内天送达。有问题在公众号里联系客服。	
+30014	0	Beats 蓝牙头戴式耳机	3		0							1						new_ui/common/red_packet/lanya_erji.png		请填写收货信息(需先在游戏和公众号绑定手机号)，奖品在发货后7日内天送达。有问题在公众号里联系客服。	
+30015	0	富士拍立得	3		0							1						new_ui/common/red_packet/pailide_xiangji.png		请填写收货信息(需先在游戏和公众号绑定手机号)，奖品在发货后7日内天送达。有问题在公众号里联系客服。	
+30016	0	MacBook Pro	3		0							1						new_ui/common/red_packet/MacBook Pro.png		请填写收货信息(需先在游戏和公众号绑定手机号)，奖品在发货后7日内天送达。有问题在公众号里联系客服。	
+30017	0	iPad Pro 13寸	3		0							1						new_ui/common/red_packet/iPad_pro_baise.png		请填写收货信息(需先在游戏和公众号绑定手机号)，奖品在发货后7日内天送达。有问题在公众号里联系客服。	
+30018	0	Apple Watch Series3	3		0							1						new_ui/common/red_packet/Apple Watch.png		请填写收货信息(需先在游戏和公众号绑定手机号)，奖品在发货后7日内天送达。有问题在公众号里联系客服。	
+30019	0	Apple AirPods无线耳机	3		0							1						new_ui/common/red_packet/AirPods.png		请填写收货信息(需先在游戏和公众号绑定手机号)，奖品在发货后7日内天送达。有问题在公众号里联系客服。	
+30020	0	10G金条	3		0							1						new_ui/common/red_packet/huangjin10g.png		请填写收货信息(需先在游戏和公众号绑定手机号)，奖品在发货后7日内天送达。有问题在公众号里联系客服。	
+30021	0	20G金条	3		0							1						new_ui/common/red_packet/huangjin20g.png		请填写收货信息(需先在游戏和公众号绑定手机号)，奖品在发货后7日内天送达。有问题在公众号里联系客服。	
+30022	0	50G金元宝	3		0							1						new_ui/common/red_packet/huangjin50g.png		请填写收货信息(需先在游戏和公众号绑定手机号)，奖品在发货后7日内天送达。有问题在公众号里联系客服。	
+30023	0	戴森吸尘器	3		0							1						new_ui/common/red_packet/xichenqi.png		请填写收货信息(需先在游戏和公众号绑定手机号)，奖品在发货后7日内天送达。有问题在公众号里联系客服。	
+30024	0	oppor15手机	3		0							1						new_ui/common/red_packet/oppor15shouji.png		请填写收货信息(需先在游戏和公众号绑定手机号)，奖品在发货后7日内天送达。有问题在公众号里联系客服。	
+30025	0	iPhoneX手机	3		0							1						new_ui/common/red_packet/iPhoneX.png		请填写收货信息(需先在游戏和公众号绑定手机号)，奖品在发货后7日内天送达。有问题在公众号里联系客服。	
+30026	0	充电宝	3		0							1						new_ui/common/red_packet/chongdianbao.png		请填写收货信息(需先在游戏和公众号绑定手机号)，奖品在发货后7日内天送达。有问题在公众号里联系客服。	
+30027	0	咖啡机	3		0							1						new_ui/common/red_packet/kafeiji.png		请填写收货信息(需先在游戏和公众号绑定手机号)，奖品在发货后7日内天送达。有问题在公众号里联系客服。	
+30028	0	富士拍立得	3		0							1						new_ui/common/red_packet/pailide.png		请填写收货信息(需先在游戏和公众号绑定手机号)，奖品在发货后7日内天送达。有问题在公众号里联系客服。	
+30029	0	移动硬盘	3		0							1						new_ui/common/red_packet/sony.png		请填写收货信息(需先在游戏和公众号绑定手机号)，奖品在发货后7日内天送达。有问题在公众号里联系客服。	
+30030	0	美的微波炉	3		0							1						new_ui/common/red_packet/weibolu.png		请填写收货信息(需先在游戏和公众号绑定手机号)，奖品在发货后7日内天送达。有问题在公众号里联系客服。	
+30031	0	九阳榨汁机	3		0							1						new_ui/common/red_packet/zhazhiji.png		请填写收货信息(需先在游戏和公众号绑定手机号)，奖品在发货后7日内天送达。有问题在公众号里联系客服。	
+30032	0	铂金吊坠	3		0							1						new_ui/common/red_packet/bojindiaozhui.png		请填写收货信息(需先在游戏和公众号绑定手机号)，奖品在发货后7日内天送达。有问题在公众号里联系客服。	
+120010	0	6万金币	5	6	0					1001	60000			0				new_ui/ShopWindow/6yuan_1.png			
+120011	0	12万金币	5	12	0					1001	120000			0				new_ui/ShopWindow/12yuan_1.png			
+120012	0	13.8万金币	5	12	0					1001	138000			0				new_ui/ShopWindow/12yuan_1.png			
+120013	0	33万金币	5	30	0					1001	330000			0				new_ui/ShopWindow/30yuan_1.png			
+120014	0	69万金币	5	60	0					1001	690000			0				new_ui/ShopWindow/60yuan_1.png			
+120015	0	120万金币	5	98	0					1001	1200000			0				new_ui/ShopWindow/98yuan_1.png			
+120016	0	160万金币	5	128	0					1001	1600000			0				new_ui/ShopWindow/128yuan_1.png			
+120017	0	460万金币	5	328	0					1001	4600000			0				new_ui/ShopWindow/328yuan_1.png			
+120018	0	首充礼包	5	6	0					1001	120000			0				mall_xiaodaijinbi.png			
+120019	0	特惠礼包	5	30	0					1001	660000			0							
+120020	0	周卡	5	30	0					1001	310000			0				new_ui/common/red_packet/weekcard.png		每天可获得20000金币	
+130001	0	1万金币	5	100	0					1001	10000			0							
+130002	0	2万金币	5	200	0					1001	20000			0							
+130003	0	3万金币	5	300	0					1001	30000			0				new_ui/ShopWindow/mall_xiaodaijinbi.png			
+130004	0	10万金币	5	1000	0					1001	100000			0				new_ui/ShopWindow/mall_xiaodaijinbi.png			
+130005	0	20万金币	5	2000	0					1001	200000			0				new_ui/ShopWindow/mall_xiaodaijinbi.png			
+130006	0	30万金币	5	3000	0					1001	300000			0							
+1100010	0	6万金币	5	6	0					1001	60000			0				new_ui/ShopWindow/6yuan_1.png			
+1100011	0	12万金币	5	12	0					1001	120000			0							
+1100012	0	13.8万金币	5	12	0					1001	138000			0				res/new_ui/ShopWindow/12yuan_1.png			
+1100013	0	33万金币	5	30	0					1001	330000			0				res/new_ui/ShopWindow/30yuan_1.png			
+1100014	0	69万金币	5	60	0					1001	690000			0				res/new_ui/ShopWindow/60yuan_1.png			
+1100015	0	120万金币	5	98	0					1001	1200000			0				res/new_ui/ShopWindow/98yuan_1.png			
+1100016	0	160万金币	5	128	0					1001	1600000			0							
+1100017	0	460万金币	5	328	0					1001	4600000			0				res/new_ui/ShopWindow/328yuan_1.png			
+1100018	0	首充礼包	5	6	0					1001	120000			0				mall_xiaodaijinbi.png			
+1100019	0	特惠礼包	5	30	0					1001	660000			0							
+1100020	0	周卡	5	30	0					1001	310000			0				res/new_ui/common/red_packet/weekcard.png		每天可获得20000金币	
+1200010	0	6万金币	5	6	0					1001	60000			0				res/new_ui/ShopWindow/6yuan_1.png			
+1200011	0	12万金币	5	12	0					1001	120000			0							
+1200012	0	13.8万金币	5	12	0					1001	138000			0				res/new_ui/ShopWindow/12yuan_1.png			
+1200013	0	33万金币	5	30	0					1001	330000			0							
+1200014	0	69万金币	5	60	0					1001	690000			0				res/new_ui/ShopWindow/60yuan_1.png			
+1200015	0	120万金币	5	98	0					1001	1200000			0				res/new_ui/ShopWindow/98yuan_1.png			
+1200016	0	160万金币	5	128	0					1001	1600000			0				res/new_ui/ShopWindow/128yuan_1.png			
+1200017	0	460万金币	5	328	0					1001	4600000			0				res/new_ui/ShopWindow/328yuan_1.png			
+1200018	0	首充礼包	5	6	0					1001	120000			0							
+1200019	0	特惠礼包	5	30	0					1001	660000			0							
+1200020	0	周卡	5	30	0					1001	310000			0							
