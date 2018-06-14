@@ -14,6 +14,9 @@ public class SCThinking {
 
     private int card;
 
+    private String uid ;
+
+
     public SCThinking(){
         tp = "thinking";
     }
@@ -56,5 +59,13 @@ public class SCThinking {
 
     public void setCard(int card) {
         this.card = card;
+    }
+
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
     }
 }

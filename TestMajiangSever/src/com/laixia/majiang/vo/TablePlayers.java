@@ -3,6 +3,7 @@ package com.laixia.majiang.vo;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -11,21 +12,21 @@ public class TablePlayers implements Serializable {
     //玩家uid
     private int uid;
     //玩家手牌
-    private List<Integer> cards;
+    private List<Integer> cards = new ArrayList<>();
     //玩家出的牌
-    private List<Integer> outCards;
+    private List<Integer> outCards = new ArrayList<>();
 
     //玩家换三张的牌
-    private List<Integer> changeCards;
+    private List<Integer> changeCards = new ArrayList<>();
 
     //用户所有的杠
-    private JSONObject gang = new JSONObject();
+    private List<Integer>  gang = new ArrayList<>();
     //用户所有的碰
-    private JSONObject peng = new JSONObject();
+    private List<Integer>  peng = new ArrayList<>();
     //用户所有的胡
-    private JSONObject hu = new JSONObject();
+    private List<Integer>  hu = new ArrayList<>();
     //所有的吃
-    private JSONObject chi = new JSONObject();
+    private List<Integer>  chi = new ArrayList<>();
     //用户的位置
     private int userSeat;
     //0未托管 1托管
@@ -68,7 +69,40 @@ public class TablePlayers implements Serializable {
     public void setOutCards(List<Integer> outCards) {
         this.outCards = outCards;
     }
+    public void addOutCards( Integer cr ){
+        outCards.add(cr);
+    }
+    public List<Integer> getGang() {
+        return gang;
+    }
 
+    public void setGang(List<Integer> gang) {
+        this.gang = gang;
+    }
+
+    public List<Integer> getPeng() {
+        return peng;
+    }
+
+    public void setPeng(List<Integer> peng) {
+        this.peng = peng;
+    }
+
+    public List<Integer> getHu() {
+        return hu;
+    }
+
+    public void setHu(List<Integer> hu) {
+        this.hu = hu;
+    }
+
+    public List<Integer> getChi() {
+        return chi;
+    }
+
+    public void setChi(List<Integer> chi) {
+        this.chi = chi;
+    }
 
     public List<Integer> getChangeCards() {
         return changeCards;
@@ -104,38 +138,7 @@ public class TablePlayers implements Serializable {
     }
 
 
-    public JSONObject getGang() {
-        return gang;
-    }
 
-    public void setGang(JSONObject gang) {
-        this.gang = gang;
-    }
-
-    public JSONObject getPeng() {
-        return peng;
-    }
-
-    public void setPeng(JSONObject peng) {
-        this.peng = peng;
-    }
-
-    public JSONObject getHu() {
-        return hu;
-    }
-
-    public void setHu(JSONObject hu) {
-        this.hu = hu;
-    }
-
-
-    public JSONObject getChi() {
-        return chi;
-    }
-
-    public void setChi(JSONObject chi) {
-        this.chi = chi;
-    }
 
     public int getUserSeat() {
         return userSeat;

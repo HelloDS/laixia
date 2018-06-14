@@ -7,7 +7,17 @@ public class SCPlayCard {
 
     private String table_id;
 
+    private String uid ;
+
     private String room_id;
+
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
 
     private int operation;
 

@@ -53,6 +53,7 @@ public class TablesUtils {
         for (int i = 0; i < tableIns.getTotalNum(); i++) {
             int uid = tableIns.getUids()[i];
             TablePlayers player = tableIns.getPlayers().get(uid);
+            scThinking.setUid(String.valueOf(uid));
             List<Integer> newLst = new ArrayList<>();//手牌
             newLst.addAll(player.getCards());
             newLst.add(card);
@@ -60,10 +61,10 @@ public class TablesUtils {
             newChiLst.addAll(player.getOutCards());
             newChiLst.add(card);
             if (tableIns.getCurSeat() == i && type == 1) {//摸牌 并且当前位置等于自己 判断自摸 杠等操作
-                if(IsCanHU(newLst,card)){
-                    isThinking = true;
-                    op.add(MahjongOp.hu);
-                }
+//                if(IsCanHU(newLst,card)){
+//                    isThinking = true;
+//                    op.add(MahjongOp.hu);
+//                }
                 if (checkGangOrPeng(newLst, 4)) {//可以杠
                     isThinking = true;
                     op.add(MahjongOp.angang);
@@ -73,7 +74,7 @@ public class TablesUtils {
                     op.add(MahjongOp.huitougang);
                 }
             } else {
-                if (checkGangOrPeng(newLst, 3)) {//可以碰
+                if (checkPeng(newLst, card)) {//可以碰
                     isThinking = true;
                     op.add(MahjongOp.peng);
                 }
@@ -81,10 +82,10 @@ public class TablesUtils {
                     isThinking = true;
                     op.add(MahjongOp.minggang);
                 }
-                if(IsCanHU(newLst,card)){
-                    isThinking = true;
-                    op.add(MahjongOp.hu);
-                }
+//                if(IsCanHU(newLst,card)){
+//                    isThinking = true;
+//                    op.add(MahjongOp.hu);
+//                }
             }
         }
         if (!isThinking) {
@@ -98,7 +99,7 @@ public class TablesUtils {
         thinkIngObj.put("tableId",tableIns.getTableId());
         redis.lpush(thinkIng,thinkIngObj);
         scThinking.setOperation(op);
-        //HttpUtils.pushMessage(JSONObject.toJSONString(scThinking), tableIns.getUids(), tableIns.getMatchInsId());
+        HttpUtils.pushMessagecl(JSONObject.toJSONString(scThinking), tableIns.getUids(), tableIns.getMatchInsId());
     }
 
     public static void doIt(TableInstance tableIns, int op, JSONArray cards,String uid) {
@@ -152,11 +153,17 @@ public class TablesUtils {
             tableIns.setCurSeat(tableIns.getCurSeat() % tableIns.getTotalNum() + 1);
         }
         scGetCard.setCutSeat(tableIns.getCurSeat());
-        int uid = tableIns.getUids()[tableIns.getCurSeat()];
+        int uid = tableIns.getUids()[tableIns.getCurSeat() - 1];
+        scGetCard.setUid(String.valueOf(uid));
         TablePlayers player = tableIns.getPlayers().get(uid);
         player.getCards().add(card);
-        //HttpUtils.pushMessage(JSONObject.toJSONString(scGetCard), tableIns.getUids(), tableIns.getMatchInsId());
-        TablesUtils.checkThinking(card, tableIns, 0);
+        try {
+            Thread.sleep(1000);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        HttpUtils.pushMessagecl(JSONObject.toJSONString(scGetCard), tableIns.getUids(), tableIns.getMatchInsId());
+        // TablesUtils.checkThinking(card, tableIns, 0);
     }
 
     /**
@@ -169,12 +176,14 @@ public class TablesUtils {
     private static boolean checkGangOrPeng(List<Integer> in, int num) {
         boolean ret = false;
         Collections.sort(in);
-        int total = 0;
+        int total = 1;
         for (int i = 0; i < in.size() - 1; i++) {
             if (in.get(i) == in.get(i + 1)) {
                 total = total + 1;
-            } else {
-                total = 0;
+            }
+            else
+            {
+                total = 1;
             }
             if (total == num) {
                 ret = true;
@@ -183,6 +192,25 @@ public class TablesUtils {
         }
         return ret;
     }
+
+
+    private static boolean checkPeng(List<Integer> in, int card) {
+        boolean ret = false;
+        Collections.sort(in);
+        int total = 0;
+        for (int i = 0; i < in.size() - 1; i++) {
+            if (in.get(i) == card) {
+                total = total + 1;
+            }
+            if (total == 3) {
+                ret = true;
+                break;
+            }
+        }
+        return ret;
+    }
+
+
 
     private static List<Integer> checkHu(List<Integer> shouCards, List<Integer> chiCards) {
         List<Integer> lst = new ArrayList<>();

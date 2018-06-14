@@ -41,7 +41,7 @@ public abstract class ClientMsg {
         FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, status, Unpooled.copiedBuffer("Failure: " + status.toString() + "\r\n", CharsetUtil.UTF_8));
         response.headers().set(CONTENT_TYPE, "text/plain; charset=UTF-8");
         // Close the connection as soon as the error message is sent.
-        ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
+        // ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
     }
 
     protected void sendResponse(Object responseMsg) {
@@ -53,7 +53,7 @@ public abstract class ClientMsg {
         ByteBuf buffer = Unpooled.copiedBuffer(jsonString.getBytes(CharsetUtil.UTF_8));
         response.content().writeBytes(buffer);
         buffer.release();
-        ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
+       // ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
     }
 
     protected void sendResponseFile(byte[] buffers) {
@@ -63,7 +63,7 @@ public abstract class ClientMsg {
         ByteBuf buffer = Unpooled.copiedBuffer(buffers);
         response.content().writeBytes(buffer);
         buffer.release();
-        ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
+       // ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
     }
 
     protected void sendResponse(Object responseMsg,ChannelHandlerContext cctx) {
@@ -76,7 +76,13 @@ public abstract class ClientMsg {
         ByteBuf buffer = Unpooled.copiedBuffer(jsonString.getBytes(CharsetUtil.UTF_8));
         response.content().writeBytes(buffer);
         buffer.release();
-        cctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
+       // cctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
     }
+
+    //
+    protected void sendMessage(Object responseMsg) {
+
+    }
+
 
 }

@@ -2,6 +2,7 @@ package com.laixia.majiang.utils;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.laixia.majiang.test.ChannelGroups;
 import org.apache.log4j.Logger;
 
 import java.io.*;
@@ -198,7 +199,9 @@ public class HttpUtils {
                 "\\\"userid\\\":0,\\\"liveid\\\":\\\"" + liveid + "\\\"," +
                 "\\\"gid\\\":\\\"\\\",\\\"ms\\\":" +
                 "[" + ary + "]}]\",\"uids\":" + JSONArray.toJSONString(pids) + "}";
-        return sendPost(uaUrl, ret);
+
+        pushMessagecl( msg,pids,liveid );
+        return "";
     }
 
     //批量推送消息 群发
@@ -211,13 +214,11 @@ public class HttpUtils {
         return sendPost(url, ret);
     }
 
-//    public static void main(String[] args) throws Exception {
-//        Map map = new HashMap();
-//        map.put("uid", "70000000");
-//         map.put("token", "e485049923aaaa1e5542c3e59b239e7a");
-//       map.put("source_type", "1201");
-//        map.put("sid", "30ATJwLB7VfLbslw44u6qi2Ni2RDi0sY3OJSzsZjPQZUuVgjI1xgi3");
-//        String url = "http://service.ichaoren.com/api/v1/zscoin/balance";
-//        System.out.println(sendPost(url, map));
-//    }
+    //批量推送消息
+    public static String pushMessagecl(String msg, int[] pids,String liveid) {
+
+        logger.info(msg);
+        ChannelGroups.sendMes(msg);
+        return "";
+    }
 }

@@ -10,6 +10,7 @@ import com.laixia.majiang.common.ResponseResult;
 import com.laixia.majiang.common.StatusCode;
 import com.laixia.majiang.redisKey.TestRedisKey;
 import com.laixia.majiang.utils.HttpUtils;
+import com.laixia.majiang.utils.TablesUtils;
 import com.laixia.majiang.vo.TableInstance;
 import com.laixia.majiang.vo.TablePlayers;
 import com.laixia.majiang.vo.sc.SCCreatePoker;
@@ -46,11 +47,13 @@ public class CreatePokerInfoHandler extends ClientMsg
         createPoker.setTable_id(pokerinfo.getTableId());
         createPoker.setSurplusSum(pokerinfo.getCards().size());
 
+        TablesUtils.setTable(pokerinfo.getRoomId(),pokerinfo.getTableId(),pokerinfo);
+
         int[] aa = new int[1];
         aa[0] = 53915;
         pokerinfo.setUids(aa);
-        HttpUtils.pushMessage(JSONObject.toJSONString(createPoker) ,pokerinfo.getUids(),pokerinfo.getMatchInsId());
-        sendResponse(new ResponseResult(StatusCode.SUCCESS,StatusCode.SUCCESS_MSG));
+        HttpUtils.pushMessagecl(JSONObject.toJSONString(createPoker) ,pokerinfo.getUids(),pokerinfo.getMatchInsId());
+        //sendResponse(new ResponseResult(StatusCode.SUCCESS,StatusCode.SUCCESS_MSG));
     }
 
     @Override

@@ -137,6 +137,7 @@ public class TableInstance implements Serializable{
 
     public void setTotalNum(int totalNum) {
         this.totalNum = totalNum;
+        uids = new int[totalNum];
     }
 
     public int getUpSeat() {
@@ -168,21 +169,22 @@ public class TableInstance implements Serializable{
         poker_type = type;
         if (cards != null) cards.clear();
         cards = new ArrayList<>();
-        for(int j = 1;j < 10;j++){
+        for(int j = 1;j <=9;j++){
             for(int i = 0;i < 4;i++){
                 cards.add(j);
             }
         }
-        for(int j = 11;j < 20;j++){
+        for(int j = 10;j <= 18;j++){
             for(int i = 0;i < 4;i++){
                 cards.add(j);
             }
         }
-        for(int j = 21;j < 30;j++){
+        for(int j = 19;j <=27;j++){
             for(int i = 0;i < 4;i++){
                 cards.add(j);
             }
         }
+        int a = 0;
     }
 
     // 给开始的4个玩家赋牌值
@@ -199,14 +201,16 @@ public class TableInstance implements Serializable{
             uid = uid + 1;
             TablePlayers player = new TablePlayers();
             player.setUserSeat( a+1 );
+
             List<Integer> ls = new ArrayList<Integer>();
             for (int j = last; j < endst; j++){
                 ls.add(cards.get(j));
             }
             player.setCards(ls);
             player.setUid(uid);
+            uids[a] = uid;
             players.put(uid, player);
-            for (int j = 0; j < endst; j++) {
+            for (int j = endst - 1; j >= 0; j--) {
                 cards.remove(j);
             }
             int ga = 0;
@@ -231,7 +235,7 @@ public class TableInstance implements Serializable{
     // 根据时间戳生成唯一房间ID
     public  void  RandRoomid() {
         long time = new Date().getTime();
-        roomId = String.valueOf(time);
+        roomId = "0";
     }
 
 

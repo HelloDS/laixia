@@ -20,22 +20,29 @@ public class ThinkTask implements Runnable{
     }
     private static IRedisClient redis = RedisFactory.getRedisClient();
     private static ScheduledExecutorService schedule;
-    public void init() {
+    public void init()
+    {
         schedule = Executors.newSingleThreadScheduledExecutor();
         schedule.scheduleWithFixedDelay(this, 200,200, TimeUnit.MILLISECONDS);
     }
 
+    // 开启线程检测超时
     @Override
-    public void run() {
+    public void run()
+    {
         RedisKey thinkIng = TableKeys.tableThink.create();
         Object obj = redis.rget(thinkIng);
-        if(obj != null){
+        if(obj != null)
+        {
             JSONObject jsonObject = JSONObject.parseObject(obj.toString());
             long time = System.currentTimeMillis()/1000;
-            if((time - jsonObject.getLong("time")) > 15){
+            if((time - jsonObject.getLong("time")) > 15)
+            {
                 TableInstance table = TablesUtils.getTable(jsonObject.getString("roomId"),jsonObject.getString("tableId"));
-                TablesUtils.mopai(table,false);
-            }else{
+                //TablesUtils.mopai(table,false);
+            }
+            else
+            {
                 redis.lpush(thinkIng,jsonObject);
             }
         }

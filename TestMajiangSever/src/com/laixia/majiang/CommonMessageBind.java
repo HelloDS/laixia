@@ -85,4 +85,23 @@ public class CommonMessageBind {
         buffer.release();
         ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
     }
+
+
+    public static void SeleName(String str, JSONObject js)
+    {
+        for(String key : commonHandlerMap.keySet())
+        {
+            ClientMsg ms = commonHandlerMap.get(key);
+            if (key.equals(str))
+            {
+                try {
+                    ms.businessProcess(js);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+
 }
