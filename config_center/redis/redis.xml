@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="GBK" ?>
+<config>
+<pool maxTotal="5000" maxIdle="10" maxWaitMillis="10000"/>
+
+ 
+
+ <node ip="laixia.f3322.net" port="26415" name="node_1" password="wangtianyeshizhu"/>
+
+<!--
+<node ip="118.194.58.103" port="6383" name="node_1" />
+<node ip="118.194.58.103" port="6385" name="node_2" />
+
+<node ip="118.194.58.103" port="6387" name="node_3" />
+<node ip="118.194.58.103" port="6389" name="node_4" />
+
+<node ip="192.168.18.16" port="63791" name="node-1" />	
+<node ip="192.168.18.16" port="63793" name="node-3" />
+-->
+
+<!--
+<node ip="127.0.0.1" port="63792" name="node-1" />
+-->
+<!-- 正式服 -->
+<!--
+<node ip="118.194.62.5" port="63791" name="node_1" />
+<node ip="118.194.62.5" port="63792" name="node_2" />
+<node ip="118.194.62.5" port="63793" name="node_3" />
+<node ip="118.194.62.5" port="63794" name="node_4" />
+<node ip="118.194.62.6" port="63795" name="node_5" />
+<node ip="118.194.62.6" port="63796" name="node_6" />
+<node ip="118.194.62.6" port="63797" name="node_7" />
+<node ip="118.194.62.6" port="63798" name="node_8" />
+-->
+</config>
