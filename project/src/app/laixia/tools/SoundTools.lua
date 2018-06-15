@@ -1,5 +1,5 @@
 
-local soundConfig = laixia.soundcfg
+local soundConfig = xzmj.soundcfg
 local soundTools = {}
 
 --记录最后播放的声音
@@ -48,7 +48,7 @@ end
 
 --设置声音开启
 function soundTools.soundOn()
-      laixia.LocalPlayercfg.LaixiaSoundOn = true
+      xzmj.LocalPlayercfg.LaixiaSoundOn = true
      -- --恢复背景音的播放
      soundTools.playMusic(_currentMusic)
 end
@@ -56,7 +56,7 @@ end
 
 --设置声音关闭
 function soundTools.soundOff()
-    laixia.LocalPlayercfg.LaixiaSoundOn = false
+    xzmj.LocalPlayercfg.LaixiaSoundOn = false
 
     --关闭所有声音
     audio.stopAllSounds()
@@ -91,11 +91,11 @@ function soundTools.playMusic(music, loop)
     _currentMusic = music
 
     --查看声音是否开启
-    if(laixia.LocalPlayercfg.LaixiaSoundOn == false) then 
+    if(xzmj.LocalPlayercfg.LaixiaSoundOn == false) then 
         return
     end
 
-    if(laixia.LocalPlayercfg.LaixiaMusicValue == 2) then 
+    if(xzmj.LocalPlayercfg.LaixiaMusicValue == 2) then 
         return
     end
 
@@ -116,11 +116,11 @@ function soundTools.playSound(sound, delay)
     end
 
     --查看声音是否开启
-    if(laixia.LocalPlayercfg.LaixiaSoundOn == false) then 
+    if(xzmj.LocalPlayercfg.LaixiaSoundOn == false) then 
         return
     end
     --查看声音是否开启
-    if(laixia.LocalPlayercfg.LaixiaSoundValue == 2) then 
+    if(xzmj.LocalPlayercfg.LaixiaSoundValue == 2) then 
         return
     end
     

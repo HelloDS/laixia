@@ -1,125 +1,115 @@
-require("config")
+
+local CURRENT_MODULE_NAME = ...
+
 require("cocos.init")
 require("framework.init")
-require("common.LXConstant")
-require("common.LXEngine")
-require("common.CommonInterFace")
-ObjectEventDispatch = require("common.MonitorSystem") 
-APP_ENV = {}
-require("logger")
-print("调用的lua启动接口")
-local Env = APP_ENV;
-Env.platform  = cc.Application:getInstance():getTargetPlatform()
-Env.director  = cc.Director:getInstance()
-Env.fileUtils = cc.FileUtils:getInstance()
-Env.userDefault = cc.UserDefault:getInstance() --
+
+
+--[[ 加载游戏配置文件  里面有全局变量 xzmj = {} ]]
+require("app.laixia.init")
+require("app.laixia.public.CommonInterFace")
+
 
 local MyApp = class("MyApp", cc.mvc.AppBase)
+
 function MyApp:ctor()
     MyApp.super.ctor(self)
-    -- local eventDispatcher = cc.Director:getInstance():getEventDispatcher()
-    -- local customListenerBg = cc.EventListenerCustom:create("APP_ENTER_BACKGROUND_EVENT",
-    --                             handler(self, self.onEnterBackground))
-    -- eventDispatcher:addEventListenerWithFixedPriority(customListenerBg, 1)
-    -- local customListenerFg = cc.EventListenerCustom:create("APP_ENTER_FOREGROUND_EVENT",
-    --                             handler(self, self.onEnterForeground))
-    -- eventDispatcher:addEventListenerWithFixedPriority(customListenerFg, 1)
-
-    cc.Device:setKeepScreenOn(true)
-
-    _G.setCommonDisplay(false)
 end
 
 function MyApp:run()
-    print( laixia.m_isUpdate)
-    if device.platform == "windows" then
-        laixia.m_isUpdate = true
-    end
-    laixia.m_isUpdate = false
-    if not laixia.m_isUpdate then
-        local loginScene = require("app/scenes/MainScene").new()
-        display.replaceScene(loginScene)
-    else
-        if not cc.UserDefault:getInstance():getBoolForKey("isUpdateSuccessful", false) then
-            --只走一次 下次硬更新修复此问题
-            local storagePath = cc.FileUtils:getInstance():getWritablePath() .. "upd/" 
-            local function removeUpdFile(fileName)
-                if (cc.FileUtils:getInstance():isFileExist(storagePath .. fileName)) then 
-                    cc.FileUtils:getInstance():removeFile(storagePath .. fileName)
-                end
-            end
-            removeUpdFile("version.manifest")
-            removeUpdFile("project.manifest")
-            removeUpdFile("project.manifest.temp")
-        end
-        local updateScene = require("app/scenes/UpLoadScene").new()
-        display.replaceScene(updateScene)
-    end
-
---    self.entryId = cc.Director:getInstance():getScheduler():scheduleScriptFunc( function(dt) 
---        local perMem = collectgarbage("count")
-
---        for i =1,3 do
---            collectgarbage("collect")
---        end
---    end, 30, false)
-end
- 
---[[
-    切换到背景
-]]--
-function MyApp:onEnterBackground()
---    audio.pauseAllSounds()
---    audio:stopMusic()
-    print("====onEnterBackground===")
-    if device.platform == "android" then
-        luaj.callStaticMethod(APP_ACTIVITY, "unRegistMessageCallback", {}, "()V") 
-    elseif device.platform == "ios" then
-        --ios不用
-    end
+    self:RegisterGameModel()
+    self:registerClass()
+    self:init();
+    self:enterScene("MainScene")
 end
 
+
 --[[
-    切换到游戏
+    注册游戏model模块
 ]]--
-function MyApp:onEnterForeground()
---    audio.resumeAllSounds()
---    audio.resumeMusic()
-
-   print("====onEnterForeground===")
-
-    local isBackgroundOn = Env.userDefault:getIntegerForKey("isBackgroundOn", 1)==1 -- 音乐
-    local isEffectOn = Env.userDefault:getIntegerForKey("isEffectOn", 1)==1 -- 音效
-
-    local state = isBackgroundOn
-    if state == true then
-        audio.resumeMusic()
-        audio.resumeMusic()         
-    else
-        audio.pauseMusic()
-    end
+function MyApp:RegisterGameModel( ... )
     
-    if device.platform == "android" then
-        luaj.callStaticMethod(APP_ACTIVITY, "registMessageCallback", {}, "()V") 
-    elseif device.platform == "ios" then
-        --ios不用
+    xzmj.Model = xzmj.Model or {}
+
+    xzmj.Model.GameLayerModel = require("app.laixia.Model.GameLayerModel")
+
+    xzmj.Model.MatchEnrollModel = require("app.laixia.Model.MatchEnrollModel")
+
+    xzmj.Model.PlayGroundModle = require("app.laixia.Model.PlayGroundModle")
+
+    xzmj.Model.PokerDeskModel = require("app.laixia.Model.PokerDeskModel")
+
+    xzmj.Model.talklayerModel = require("app.laixia.Model.talklayerModel")
+
+    xzmj.Model.TaskLayerModel = require("app.laixia.Model.TaskLayerModel")
+
+end
+
+
+function MyApp:init()
+    xzmj.resLoader = import(".laixia.public.ResLoader", CURRENT_MODULE_NAME)
+        :init()
+        :prepareForLoad()
+end
+
+--[[
+    暂时没用
+]]--
+function MyApp:registerClass()
+    local o = {}
+    local recursion; function recursion(_o)
+        setmetatable(_o, {
+            __index = function(t, k)
+                local path = rawget(t,"__path")
+                local t1 = nil
+                if string.byte(k,1) == string.byte(string.upper(k),1) then
+                    local className
+                     if path then
+                        className = path.."."..k
+                    else
+                        className = k
+                    end
+                    -- print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>className",className)
+                    t1 = require(className)
+                    rawset(t, k, t1)
+                else
+                    t1 = {}
+                    if path then
+                        t1.__path = path ..".".. k
+                    else
+                        t1.__path = k
+                    end
+                    -- print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>path",t1.__path)
+                    rawset(t, k, t1)
+                    recursion(_o[k])
+                end
+                return t1
+            end,
+
+            __newindex = function(_, k, v)
+                -- only read
+            end,
+        })
     end
 
-    -- local lastScene = cc.Director:getInstance():getRunningScene()
-    -- if lastScene and lastScene.UpdateNetAndElectricity then
-    --     lastScene:UpdateNetAndElectricity()
-    -- else
-    --     print("切换游戏刷新电量wifi失败==========")
-    -- end
+    recursion(o)
+    local A = {}
+    A = O;
+end
+---- 在后台
+function MyApp:onEnterBackground()
+    MyApp.super.onEnterBackground(self);
+end
 
---    local state = isEffectOn
---    local pt = nil
---    if state == true then
---        audio.resumeAllSounds()
---    else
---        audio.pauseAllSounds()
---        audio.stopAllSounds()
---    end
+function MyApp:onEnterForeground()
+    MyApp.super.onEnterForeground(self);
+end
+
+function MyApp:resume()
+    print('MyApp:resume');
+end
+
+function MyApp:restart()
 end
 
 return MyApp

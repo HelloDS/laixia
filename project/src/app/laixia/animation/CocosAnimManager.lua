@@ -39,7 +39,7 @@ end
 
 function CocosAnimManager:playAnimationAt(parent,name,callback)
     local aniData = self:getAnimationData(name);
-    local node = laixia.Layout.loadNode(aniData.AnimationFile)
+    local node = xzmj.Layout.loadNode(aniData.AnimationFile)
     node:addTo(parent);
     local action = cc.CSLoader:createTimeline(aniData.AnimationFile)
     node:runAction(action)

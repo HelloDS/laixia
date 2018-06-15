@@ -1,6 +1,6 @@
 local CURRENT_MODULE_NAME = ...;
 print("import ResLoader")
-local laixia = laixia;
+local xzmj = xzmj;
 
 local ResLoader = class("ResLoader");
 
@@ -22,51 +22,12 @@ local preloader = {
 ------------------------------------------------------------------------------------------------
 --新界面资源
 
-    -- {'new_ui/common/activity.plist','new_ui/common/activity.png',addSpriteFramesAsync},
-        {'new_ui/common/all_button.plist','new_ui/common/all_button.png',addSpriteFramesAsync},
-        {'new_ui/common/layer01.plist','new_ui/common/layer01.png',addSpriteFramesAsync},
-    -- {'new_ui/common/layer02.plist','new_ui/common/layer02.png',addSpriteFramesAsync},
-    -- {'new_ui/common/picture.plist','new_ui/common/picture.png',addSpriteFramesAsync},
-    --{'new_ui/common/poker.plist','new_ui/common/poker.png',addSpriteFramesAsync},
-    -- {'new_ui/common/role.plist','new_ui/common/role.png',addSpriteFramesAsync},
-        {'new_ui/common/word.plist','new_ui/common/word.png',addSpriteFramesAsync},
-        {'new_ui/common/icon.plist','new_ui/common/icon.png',addSpriteFramesAsync},
-    -- {'new_ui/common/activity01.plist','new_ui/common/activity01.png',addSpriteFramesAsync},
-    -- {'new_ui/common/libao.plist','new_ui/common/libao.png',addSpriteFramesAsync},
-        {'new_ui/common/red_packet.plist','new_ui/common/red_packet.png',addSpriteFramesAsync},
-    -- {'new_ui/common/chips.plist','new_ui/common/chips.png',addSpriteFramesAsync},
+    {'new_ui/common/all_button.plist','new_ui/common/all_button.png',addSpriteFramesAsync},
+    {'new_ui/common/layer01.plist','new_ui/common/layer01.png',addSpriteFramesAsync},
+    {'new_ui/common/word.plist','new_ui/common/word.png',addSpriteFramesAsync},
+    {'new_ui/common/icon.plist','new_ui/common/icon.png',addSpriteFramesAsync},
+    {'new_ui/common/red_packet.plist','new_ui/common/red_packet.png',addSpriteFramesAsync},
 
---------------------------------------------------------------------------------------------
-    --新动画
-    -- {'new_animation/baoxiang0.plist','new_animation/baoxiang0.png',addSpriteFramesAsync},
-    -- {'new_animation/jigndeng0.plist','new_animation/jigndeng0.png',addSpriteFramesAsync},
-    -- {'new_animation/shouchong0.plist','new_animation/shouchong0.png',addSpriteFramesAsync},
-    -- {'new_animation/naozhogn0.plist','new_animation/naozhogn0.png',addSpriteFramesAsync},
-    -- {'new_animation/ddz0.plist','new_animation/ddz0.png',addSpriteFramesAsync},
-    -- {'new_animation/jinbidiaoluo.plist','new_animation/jinbidiaoluo.png',addSpriteFramesAsync},
-    -- {'new_animation/zhengzaijiazai.plist','new_animation/zhengzaijiazai.png',addSpriteFramesAsync},
-    -- {'new_animation/rain.plist','new_animation/rain.png',addSpriteFramesAsync},
-    -- {'new_animation/gain.plist','new_animation/gain.png',addSpriteFramesAsync},
-    -- {'new_animation/tablelose.plist','new_animation/tablelose.png',addSpriteFramesAsync},
-    -- -- {'new_animation/everyday0.plist','new_animation/everyday0.png',addSpriteFramesAsync},
-    -- {'new_animation/table_zjz.plist','new_animation/table_zjz.png',addSpriteFramesAsync},
-    --
-------------------------------------------------------------------------------------------------
-    -- {'new_animation/bsc0.plist','new_animation/bsc0.png',addSpriteFramesAsync},
-    -- {'new_animation/szp0.plist','new_animation/szp0.png',addSpriteFramesAsync},
-    -- {'new_animation/dzpk0.plist','new_animation/dzpk0.png',addSpriteFramesAsync},
-    -- {'new_animation/lhd0.plist','new_animation/lhd0.png',addSpriteFramesAsync},
-    -- {'new_animation/guang0.plist','new_animation/guang0.png',addSpriteFramesAsync},
-    -- {'new_animation/famerwin.plist','new_animation/famerwin.png',addSpriteFramesAsync},
-    -- {'new_animation/landlordwin.plist','new_animation/landlordwin.png',addSpriteFramesAsync},
-    -- {'new_animation/roomlight.plist','new_animation/roomlight.png',addSpriteFramesAsync},
-    -- {'new_animation/roomkaishi.plist','new_animation/roomkaishi.png',addSpriteFramesAsync},
-    -- {'new_animation/famerlost001.plist','new_animation/famerlost001.png',addSpriteFramesAsync},
-    -- {'new_animation/ming.plist','new_animation/ming.png',addSpriteFramesAsync},
-    -- {'new_animation/laizi.plist','new_animation/laizi.png',addSpriteFramesAsync},
-    -- {'new_animation/discount.plist','new_animation/discount.png',addSpriteFramesAsync},
-----------------------------------------------------------------------------------------------
-----------------------------------------------------------------------------------------------
     },
 
 
@@ -104,15 +65,9 @@ end
 
 -- 预先读取的资源
 function ResLoader:init()    
-    laixia.JsonTxtData:init();
-    laixia.net.init();
-    laixia.ui:init();
-    laixia.ani:init();
-
+    xzmj.ani:init();
     return self      
 end
-
-
 
 
 function ResLoader:addDefault()
@@ -155,10 +110,11 @@ end
 function ResLoader:doLoad()            
     print("ResLoader:doLoad");
     for i,v in ipairs(self._resArrays) do
+
         v[2]:registerLoadingCallback(function(...)             
             self._loadingCallback(...)
         end)
-        :doLoad();          
+        :doLoad();             
     end      
 end
 

@@ -1,5 +1,5 @@
 local laixia = laixia
-local soundConfig =  laixia.soundcfg
+local soundConfig =  xzmj.soundcfg
 local WebView = class("WebView", function()
     return cc.Layer:create()
 end)

@@ -3,14 +3,14 @@
 
 local CURRENT_MODULE_NAME = ...;
 
-local AniSys = class("AniSys",laixia.Loader)
+local AniSys = class("AniSys",xzmj.Loader)
 
 function AniSys:ctor()
     self.super.ctor(self,CURRENT_MODULE_NAME);
 end
 
 function AniSys:init()
-    self:addLoadItem("CObjectAnimationManager")
+   -- self:addLoadItem("CObjectAnimationManager")
     self:addLoadItem("CocosAnimManager")
 end
 

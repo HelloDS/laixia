@@ -1,3 +1,10 @@
+
+
+--[[
+    管理器里面用到
+]]--
+
+
 local Layout = {}
 
 function Layout.loadScene(path)
@@ -24,5 +31,12 @@ function Layout.loadNode(path)
     ret:setTag(-1)
     return ret
 end
+
+function Layout.CreateItemNode( delete )
+    local n = require "app.laixia.ui.layer.GameTips.ItemNode"
+    local node = n.CreateItemNode( delete )
+    return node
+end
+
 
 return Layout
