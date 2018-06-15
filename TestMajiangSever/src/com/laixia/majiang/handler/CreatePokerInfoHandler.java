@@ -37,6 +37,7 @@ public class CreatePokerInfoHandler extends ClientMsg
             cinfo.setUid(player.getUid());
             cinfo.setSeat(player.getUserSeat());
             cinfo.setPokerinfo(player.getCards());
+
             createPoker.addPlayerInfolist(cinfo);
         }
         createPoker.setRoom_id(pokerinfo.getRoomId());

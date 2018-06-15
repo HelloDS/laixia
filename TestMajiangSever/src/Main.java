@@ -1,7 +1,8 @@
-import cn.laixia.module.base.xml.initialize.InitizlizeManager;
+﻿import cn.laixia.module.base.xml.initialize.InitizlizeManager;
 import com.laixia.majiang.CommonMessageBind;
 import com.laixia.majiang.MajiangHandler;
 
+import com.laixia.majiang.handler.ChangeMJInfoHandler;
 import com.laixia.majiang.handler.CreatePokerInfoHandler;
 
 import com.laixia.majiang.Task.ThinkTask;
@@ -12,7 +13,7 @@ import com.laixia.majiang.test.SimpleServer;
 import com.laixia.majiang.utils.ClassUtils;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
-import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.nio.NioEventLoopGroup;  
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.http.HttpObjectAggregator;
@@ -35,7 +36,7 @@ public class Main {
         //serverInit();
         initgamesever();
 
-
+ 
 //        List<Integer> in = new ArrayList<>();
 //        in.add(5);
 //        in.add(0);
@@ -61,8 +62,6 @@ public class Main {
 //                break;
 //            }
 //        }
-
-
     }
 
     private static void  serverInit() {
@@ -111,6 +110,7 @@ public class Main {
         CommonMessageBind.getInstance().register("test", new TestHandler());
         CommonMessageBind.getInstance().register("op_card", new OperationHandler());
         CommonMessageBind.getInstance().register("create_poker", new CreatePokerInfoHandler());
+        CommonMessageBind.getInstance().register("change_mj", new ChangeMJInfoHandler());
         logger.info("handler加载完成");
     }
 

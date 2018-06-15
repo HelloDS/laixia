@@ -7,12 +7,14 @@ import com.laixia.majiang.utils.TablesUtils;
 import com.laixia.majiang.vo.TableInstance;
 import com.laixia.majiang.vo.TablePlayers;
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.group.ChannelGroup;
 
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class SimpleServerHandler extends ChannelInboundHandlerAdapter {
@@ -24,19 +26,29 @@ public class SimpleServerHandler extends ChannelInboundHandlerAdapter {
     @Override  
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
 
-        System.out.print("---------------------msg"+msg);
-        ByteBuf result = (ByteBuf) msg;
-        byte[] result1 = new byte[result.readableBytes()];  
-        // msg中存储的是ByteBuf类型的数据，把数据读取到byte[]中  
-        result.readBytes(result1);  
-        String resultStr = new String(result1);  
-        // 接收并打印客户端的信息  
-        System.out.println("接收并打印客户端的信息:" + resultStr);
-        // 释放资源，这行很关键  
-        result.release();
+
+         String body=(String)msg;
+//         System.out.println("服务端收到："+body+"，次数:");
+//         SimpleDateFormat  dateFormat=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//         String time=dateFormat.format(new Date());
+//         String res="来自与服务端的回应,时间:"+ time;
+//         ByteBuf resp=Unpooled.copiedBuffer(res.getBytes());
+//         ctx.writeAndFlush(resp);
+
+
+//        System.out.print("---------------------msg"+msg);
+//        ByteBuf result = (String)msg;
+//        byte[] result1 = new byte[result.readableBytes()];
+//        // msg中存储的是ByteBuf类型的数据，把数据读取到byte[]中
+//        result.readBytes(result1);
+//        String resultStr = new String(result1);
+//        // 接收并打印客户端的信息
+//        System.out.println("接收并打印客户端的信息:" + resultStr);
+//        // 释放资源，这行很关键
+//        result.release();
 
         //将json字符串转化为JSONObject
-        JSONObject  jsobj = JSONObject.parseObject(resultStr);
+        JSONObject  jsobj = JSONObject.parseObject(body);
         int msgid = jsobj.getIntValue("msgid");
         if(msgid == 1001) // 绑定id
         {

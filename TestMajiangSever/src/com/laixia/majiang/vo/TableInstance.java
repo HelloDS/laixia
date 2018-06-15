@@ -174,12 +174,12 @@ public class TableInstance implements Serializable{
                 cards.add(j);
             }
         }
-        for(int j = 10;j <= 18;j++){
+        for(int j = 11;j <= 19;j++){
             for(int i = 0;i < 4;i++){
                 cards.add(j);
             }
         }
-        for(int j = 19;j <=27;j++){
+        for(int j = 21;j <=29;j++){
             for(int i = 0;i < 4;i++){
                 cards.add(j);
             }
@@ -221,15 +221,19 @@ public class TableInstance implements Serializable{
     public void RandPlayerIdInZhuang(  ) {
         Random r = new Random();
         int id = r.nextInt(totalNum) + 1;
+        id = 2;  // 暂时写死
         int a = 0;
         for(Integer key : players.keySet()){
             a++;
             if ( id == a ) {
+                int val = getCardsInFrist();
+                setZhuang_Val( val );
+                System.out.print("zhuangid = "+zhuang_uid);
+                players.get(key).getCards().add(val);
                 zhuang_uid = key;
                 break;
             }
         }
-        setZhuang_Val(getCardsInFrist());
     }
 
     // 根据时间戳生成唯一房间ID
@@ -249,6 +253,25 @@ public class TableInstance implements Serializable{
         cards.remove(0);
         return  pokerval;
     }
+
+    // 检测3个玩家换三张的数据都收到没有
+    public boolean IsHszEnd(){
+        int a = 0;
+        for(Integer key : players.keySet()){
+            TablePlayers pl = players.get(key);
+            if( pl.getChangeCardsSize() == 3){
+                a = a + 1;
+            }
+            else {
+                return  false;
+            }
+        }
+        if (a >= getTotalNum()) {
+            return  true;
+        }
+        return  false;
+    }
+
 
     public int getPokertype() { return poker_type; }
 

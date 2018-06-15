@@ -121,22 +121,25 @@ public class TablePlayers implements Serializable {
     }
 
     // 从手牌中移除玩家得选中得三张牌
-    public void ChangeCards(List<Integer> changeCards) {
+    public void RemoveInChangeCards(List<Integer> changeCards) {
        if(cards.size() < 13) {
            return;
        }
         for(int i=0;i<changeCards.size();i++){
             int cval = changeCards.get(i);
-
-            for(int j = 0;i < cards.size();j++) {
+            for(int j = cards.size() - 1;j >=0 ;j--) {
                 int sval = cards.get(j);
                 if ( sval == cval ) {
-                    changeCards.remove(sval);
+                    cards.remove(j);
+                    j = -1;
                 }
             }
         }
     }
-
+    public int getChangeCardsSize()
+    {
+        return changeCards.size();
+    }
 
 
 

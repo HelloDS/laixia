@@ -53,7 +53,6 @@ public class TablesUtils {
         for (int i = 0; i < tableIns.getTotalNum(); i++) {
             int uid = tableIns.getUids()[i];
             TablePlayers player = tableIns.getPlayers().get(uid);
-            scThinking.setUid(String.valueOf(uid));
             List<Integer> newLst = new ArrayList<>();//手牌
             newLst.addAll(player.getCards());
             newLst.add(card);
@@ -68,19 +67,26 @@ public class TablesUtils {
                 if (checkGangOrPeng(newLst, 4)) {//可以杠
                     isThinking = true;
                     op.add(MahjongOp.angang);
+                    scThinking.setUid(String.valueOf(uid));
                 }
                 if (checkGangOrPeng(newChiLst, 4)) {//回头杠
                     isThinking = true;
                     op.add(MahjongOp.huitougang);
+                    scThinking.setUid(String.valueOf(uid));
+
                 }
             } else {
                 if (checkPeng(newLst, card)) {//可以碰
                     isThinking = true;
                     op.add(MahjongOp.peng);
+                    scThinking.setUid(String.valueOf(uid));
+
                 }
                 if (checkGangOrPeng(newLst, 4)) {//可以杠
                     isThinking = true;
                     op.add(MahjongOp.minggang);
+                    scThinking.setUid(String.valueOf(uid));
+
                 }
 //                if(IsCanHU(newLst,card)){
 //                    isThinking = true;
@@ -99,6 +105,13 @@ public class TablesUtils {
         thinkIngObj.put("tableId",tableIns.getTableId());
         redis.lpush(thinkIng,thinkIngObj);
         scThinking.setOperation(op);
+
+        try {
+            Thread.sleep(1000);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         HttpUtils.pushMessagecl(JSONObject.toJSONString(scThinking), tableIns.getUids(), tableIns.getMatchInsId());
     }
 
@@ -152,8 +165,13 @@ public class TablesUtils {
         if (!isCur) {
             tableIns.setCurSeat(tableIns.getCurSeat() % tableIns.getTotalNum() + 1);
         }
-        scGetCard.setCutSeat(tableIns.getCurSeat());
-        int uid = tableIns.getUids()[tableIns.getCurSeat() - 1];
+        int seat =tableIns.getCurSeat();
+        scGetCard.setCutSeat(seat);
+        if(seat - 1 <0)
+        {
+            seat = 4;
+        }
+        int uid = tableIns.getUids()[seat - 1];
         scGetCard.setUid(String.valueOf(uid));
         TablePlayers player = tableIns.getPlayers().get(uid);
         player.getCards().add(card);

@@ -3,6 +3,7 @@ package com.laixia.majiang.handler;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.laixia.majiang.ClientMsg;
+import com.laixia.majiang.CommonMessageBind;
 import com.laixia.majiang.common.MahjongOp;
 import com.laixia.majiang.common.ResponseResult;
 import com.laixia.majiang.common.StatusCode;
@@ -46,8 +47,8 @@ public class OperationHandler extends ClientMsg
 //            }
             JSONArray cards = msg.getJSONArray("card");
             if (operation == MahjongOp.chupai || operation == MahjongOp.huitougang || operation == MahjongOp.angang ||
-                    operation == MahjongOp.minggang || operation == MahjongOp.peng || operation == MahjongOp.dingque ||
-                    operation == MahjongOp.huansaizhang)
+                    operation == MahjongOp.minggang || operation == MahjongOp.peng || operation == MahjongOp.dingque
+                    )
             {
                 SCPlayCard scPlayCard = new SCPlayCard();
                 scPlayCard.setOperation(operation);
@@ -92,29 +93,31 @@ public class OperationHandler extends ClientMsg
                 player.getGang().add((Integer) cards.get(0));
                 TablesUtils.checkThinking((Integer) cards.get(0), tableIns,1);//判断是否需要Thinking
             }
-
-
             if(operation == MahjongOp.dingque)//定缺
             {
                 player.setQuedehuase((Integer) cards.get(0));
             }
             if(operation == MahjongOp.huansaizhang)//换三张
             {
-                JSONArray changemjArr = msg.getJSONArray("huansaizhang");
+                JSONArray changemjArr = msg.getJSONArray("card");
                 List<Integer> li = new ArrayList();
                 for(int i=0;i< changemjArr.size();i++)
                 {
-                    JSONObject job = changemjArr.getJSONObject(i);
-                    li.add(job.getInteger("huansaizhang"));
+                    int val = (Integer) changemjArr.get(i);
+                    li.add(val);
                 }
-                if(li.size() >= 3)
+                player.RemoveInChangeCards( li );
+                int a = player.getCards().size();
+                a ++;
+                if(li.size() == 3)
                 {
                     player.setChangeCards(li);
                 }
-                else
-                {
-                    // .....
-                }
+            }
+
+            TablesUtils.setTable(roomId, tableId, tableIns);
+            if(tableIns.IsHszEnd()) {
+                CommonMessageBind.getInstance().SeleName("change_mj",msg);
             }
             //sendResponse(new ResponseResult(StatusCode.SUCCESS, StatusCode.SUCCESS_MSG));
         }
