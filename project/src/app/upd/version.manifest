@@ -1,0 +1,7 @@
+{
+  "packageUrl": "http://39.106.120.67/upload/updatefiles/", 
+  "version": "0.0.2", 
+  "engineVersion": "3.3", 
+  "remoteVersionUrl": "http://39.106.120.67/upload/updatefiles/src/app/upd/version.manifest", 
+  "remoteManifestUrl": "http://39.106.120.67/upload/updatefiles/src/app/upd/project.manifest"
+}

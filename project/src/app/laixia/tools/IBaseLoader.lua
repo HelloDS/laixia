@@ -1,11 +1,5 @@
 
 
-
---[[
-    初始化用到
-]]--
-
-
 local IBaseLoader = class("IBaseLoader")
 
 function IBaseLoader:ctor(...)
@@ -43,7 +37,7 @@ end
 --self.super.doLoad(self)
 
 function IBaseLoader:addLoadItem(itemName)
-    -- xzmj.logGame("IBaseLoader:addLoadItem "..itemName);
+    laixia.logGame("IBaseLoader:addLoadItem "..itemName);
     if(self._itemArrays[itemName] == nil) then
         self._itemArrays[itemName] = import("."..itemName,self._cur_module_name);
         self[itemName] = self._itemArrays[itemName];

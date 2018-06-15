@@ -143,8 +143,6 @@ else
     scale = 1.0
 end
 
-
-
 local winSize = sharedDirector:getWinSize()
 display.screenScale        = 2.0
 display.contentScaleFactor = scale

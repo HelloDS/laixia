@@ -1,6 +1,30 @@
 
+--[[
+    此接口是c++调用的lua启动接口
+            1.此处处理文件路径加载
+            2.报错异常处理
+]]
 
+--添加本地目录
+cc.FileUtils:getInstance():addSearchPath("src")
+cc.FileUtils:getInstance():addSearchPath("src/app")
+cc.FileUtils:getInstance():addSearchPath("src/app/laixia")
+cc.FileUtils:getInstance():addSearchPath("res")
+cc.FileUtils:getInstance():addSearchPath("res/new_ui")
+cc.FileUtils:getInstance():addSearchPath("res/new_animation")
 
+--添加更新目录到searchpath
+local pathToSave = cc.FileUtils:getInstance():getWritablePath() .. "upd"
+cc.FileUtils:getInstance():addSearchPath(pathToSave .. "/src",true)
+cc.FileUtils:getInstance():addSearchPath(pathToSave .. "/src/app",true)
+cc.FileUtils:getInstance():addSearchPath(pathToSave .. "/src/app/laixia",true)
+cc.FileUtils:getInstance():addSearchPath(pathToSave .. "/res", true)
+cc.FileUtils:getInstance():addSearchPath(pathToSave .. "/res/new_animation",true)
+
+package.path = package.path .. "/src;" .. "/src/app"
+
+--屏蔽c++多余的日志
+cc.FileUtils:getInstance():setPopupNotify(false)
 
 function __G__TRACKBACK__(errorMessage)
     print("----------------------------------------")
@@ -8,52 +32,23 @@ function __G__TRACKBACK__(errorMessage)
     print(debug.traceback("", 2))
     print("----------------------------------------")
 
-
-    print("errorMessage============="..errorMessage)
-    -- 游戏报错弹出提示
-    if xzmj and xzmj.debuger then
-        local message = debug.traceback(errorMessage, 3)
-        xzmj.debuger:showBugMesg("lua error:\n\t" .. message)
-    end
-
-
-    --- 游戏错误日志上传
-    local xhr = cc.XMLHttpRequest:new()
+     local xhr = cc.XMLHttpRequest:new()
     xhr.responseType = cc.XMLHTTPREQUEST_RESPONSE_STRING
     errorMessage = string.gsub(errorMessage,'\\','/')
     local msg = debug.traceback("", 2) 
     msg=string.gsub(msg,'\\','\\\\')
     msg=string.gsub(msg,' ','_')
     xhr:open("POST", "http://zgame.laixia.com/uploaderror")
-    xhr:registerScriptHandler(function()
+    xhr:registerScriptHandler(function() 
         local test = 1
     end)  
     xhr:send("key="..tostring(errorMessage).."&msg="..tostring(msg)) 
-
+end
+local function main()
+    require("app.MyApp").new():run()
 end
 
-package.path = package.path .. ";src/"
-cc.FileUtils:getInstance():setPopupNotify(false)
-            
-require "config"
-require("cocos.init")
-require("framework.init")
-math.randomseed(os.time())
-
-
-local fileUtils = cc.FileUtils:getInstance()
-local addSearchPath2 = function(path)    
-    fileUtils:addSearchPath(path,true)
+local status,msg = xpcall(main,__G__TRACKBACK__)
+if not status then
+    print(msg)
 end
-
-local sharedDirector         = cc.Director:getInstance()
-local glview = sharedDirector:getOpenGLView()
-glview:setDesignResolutionSize(CONFIG_SCREEN_WIDTH, CONFIG_SCREEN_HEIGHT, cc.ResolutionPolicy.SHOW_ALL)
-
-addSearchPath2("src")
-addSearchPath2("res")
-addSearchPath2("res/libs")
-addSearchPath2("res/new_ui") 
-addSearchPath2("res/new_animation") 
-
-require("app.scenes.MainScene")

@@ -3,13 +3,15 @@ local laixia = laixia;
 local Env = APP_ENV;
 
 local Packet =  import("....net.Packet")  
-local soundConfig =  xzmj.soundcfg   
-local EffectDict =  xzmj.EffectDict   
+local soundConfig =  laixia.soundcfg;   
+local EffectDict =  laixia.EffectDict; 
+--local EffectAni = laixia.EffectAni;    
+local DownloadActivity = import("..DownloadActivity")
 local DownloaderHead = import("..DownloaderHead")
 local WebView = import(".WebView")
 
-local LobbyWindow = class("LobbyWindow", import("...CSBBase"):new()) 
-local userDefault = Env.userDefault
+local LobbyWindow = class("LobbyWindow", import("...CSBBase"):new()) -- 
+local userDefault = Env.userDefault;
 
 local mBeganDown = false  --下载标记
 
@@ -32,6 +34,46 @@ end
 function LobbyWindow:onInit()
     self.super:onInit(self)
 
+    ObjectEventDispatch:addEventListener(_LAIXIA_EVENT_SHOW_MAININTERFACE_WINDOW, handler(self, self.show))
+    ObjectEventDispatch:addEventListener(_LAIXIA_EVENT_UPDATE_MAININTERFACE_WINDOW,handler(self,self.updateWindow))
+    ObjectEventDispatch:addEventListener(_LAIXIA_EVENT_SHOW_HALL_WINDOW, handler(self, self.sendHallPacket))
+    --删除小游戏的进度条
+    ObjectEventDispatch:addEventListener(_LAIXIA_EVENT_HIDE_XIAOYOUXI_PEOGRESS, handler(self, self.clearProgress))
+----------------------------------------------------------------------------------------------------
+    -- 显示背包红点
+    ObjectEventDispatch:addEventListener(_LAIXIA_EVENT_SHOW_BAGRED_WINDOW, handler(self, self.showStationManageReda))
+    -- 隐藏背包红点
+    ObjectEventDispatch:addEventListener(_LAIXIA_EVENT_HIDES_BAGRED_WINDOW, handler(self, self.hideStationManageReda))
+    -- 显示背包tips
+    -- ObjectEventDispatch:addEventListener(_LAIXIA_EVENT_SHOW_BAGTIPS_WINDOW, handler(self, self.showBagTips))
+    -- 隐藏背包tips
+    -- ObjectEventDispatch:addEventListener(_LAIXIA_EVENT_HIDES_BAGTIPS_WINDOW, handler(self, self.hideBagTips))
+    -- 发送礼品盒请求
+    ObjectEventDispatch:addEventListener(_LAIXIA_EVENT_SEND_TOOLBOX_WINDOW, handler(self, self.sendToMyBagPacket))
+    --下载头像完成
+    ObjectEventDispatch:addEventListener(_LAIXIA_EVENT_DOWNLOADLOBBY_PICTURE_WINDOW, handler(self, self.onHeadDoSuccess)) 
+    --轮播图下载
+    ObjectEventDispatch:addEventListener(_LAIXIA_EVENT_DOWNLOAD_LUNBO_WINDOW, handler(self, self.onLunBoDoSuccess)) 
+
+    ObjectEventDispatch:addEventListener(_LAIXIA_EVENT_UPDATE_PICTURE_WINDOW, handler(self, self.addHead))--self.updateHead))
+--    -- 显示站内信红点
+    ObjectEventDispatch:addEventListener(_LAIXIA_EVENT_SHOW_LETTERRED_WINDOW, handler(self, self.showStationManageRed))
+--    -- 隐藏站内信红点
+    ObjectEventDispatch:addEventListener(_LAIXIA_EVENT_HIDES_LETTERRED_WINDOW, handler(self, self.hideStationManageRed))
+-----------------------------------------------------------------------------------------------------
+----LobbyBottom Window
+    -- 发送商城请求
+    ObjectEventDispatch:addEventListener(_LAIXIA_EVENT_SEND_SHOPWINDOW, handler(self, self.sendShopPacket))
+    ObjectEventDispatch:addEventListener(_LAIXIA_EVENT_RETURN_FIRSTGIFT_WINDOW ,handler(self,self.showFirstGift))
+    
+    ---排行榜功能 begin wangtianye)
+--    ObjectEventDispatch:addEventListener(_LAIXIA_EVENT_UPDATE_RANK_WINDOW, handler(self, self.updateRankWindow))
+--    ObjectEventDispatch:addEventListener(_LAIXIA_EVENT_REQUEST_RANKLIST_WINDOW, handler(self, self.sendRankListPacket))
+--    ObjectEventDispatch:addEventListener(_LAIXIA_EVENT_DOWNLOADRANK_PICTURE_WINDOW, handler(self,self.headDownloadSuccess))
+
+   
+    ---end
+
 end
 
 
@@ -39,9 +81,9 @@ end
 function LobbyWindow:sendHallPacket()
     self:show();  
     local stream = Packet.new("CSHallLobbyy", _LAIXIA_PACKET_CS_HallLobbyID)
-    stream:setValue("Code", xzmj.LocalPlayercfg.LaixiaHttpCode)
-    stream:setValue("GameID", xzmj.config.GameAppID)
-    xzmj.net.sendHttpPacketAndWaiting(stream)
+    stream:setValue("Code", laixia.LocalPlayercfg.LaixiaHttpCode)
+    stream:setValue("GameID", laixia.config.GameAppID)
+    laixia.net.sendHttpPacketAndWaiting(stream)
 end
 
 function LobbyWindow:setImgBut(item)
@@ -63,7 +105,7 @@ function LobbyWindow:addAnimationEventListener(but)
         local s = target:getContentSize()
         local rect = cc.rect(0, 0, s.width, s.height)
         if cc.rectContainsPoint(rect, locationInNode) then
-            xzmj.soundTools.playSound(soundConfig.BUTTON_SOUND.ui_button_open)
+            laixia.soundTools.playSound(soundConfig.BUTTON_SOUND.ui_button_open)
             local sc = cc.ScaleTo:create(0.1, 1.1)
             target:getParent():runAction(sc)
             return true
@@ -99,7 +141,7 @@ function LobbyWindow:addButAnimationEventListener(but,callFun)
     but.callFun = callFun
     but:addTouchEventListener(function(sender,eventtype)
        if eventtype == ccui.TouchEventType.began then
-        xzmj.soundTools.playSound(soundConfig.BUTTON_SOUND.ui_button_open)
+        laixia.soundTools.playSound(soundConfig.BUTTON_SOUND.ui_button_open)
         local sc = cc.ScaleTo:create(0.1, 1.1)
         sender:runAction(sc)
         elseif eventtype == ccui.TouchEventType.moved then
@@ -120,7 +162,7 @@ end
 function LobbyWindow:onGoMatchWindow(sender, eventtype)
     -- 比赛场按钮回调函数
 --    if eventtype == ccui.TouchEventType.began then
---        xzmj.soundTools.playSound(soundConfig.BUTTON_SOUND.ui_button_open)
+--        laixia.soundTools.playSound(soundConfig.BUTTON_SOUND.ui_button_open)
 --        sender:setScale(1.1)
 --    elseif eventtype == ccui.TouchEventType.canceled then
 --        sender:setScale(1)
@@ -133,8 +175,8 @@ end
 function LobbyWindow:onGoTurnTable(sender, eventtype) 
 --
     local stream = Packet.new("CSTurnTableEnter", _LAIXIA_PACKET_CS_TurnTableEnterID)
-    stream:setValue("HttpCode", xzmj.LocalPlayercfg.LaixiaHttpCode) 
-    xzmj.net.sendHttpPacketAndWaiting(stream)
+    stream:setValue("HttpCode", laixia.LocalPlayercfg.LaixiaHttpCode) 
+    laixia.net.sendHttpPacketAndWaiting(stream)
             
 --     ObjectEventDispatch:pushEvent(_LAIXIA_EVENT_SHOW_MARKEDWORDS_WINDOW, "敬请期待")
 end
@@ -142,7 +184,7 @@ end
 --万人牛牛游戏
 function LobbyWindow:onWanRenNiuNiu(sender, eventtype)
 --    if eventtype == ccui.TouchEventType.began then
---        xzmj.soundTools.playSound(soundConfig.BUTTON_SOUND.ui_button_open)
+--        laixia.soundTools.playSound(soundConfig.BUTTON_SOUND.ui_button_open)
 --        sender:setScale(1.1)
 --    elseif eventtype == ccui.TouchEventType.canceled then
 --        sender:setScale(1)
@@ -188,7 +230,7 @@ end
 -- 小游戏
 function LobbyWindow:onSingle(sender, eventtype)
 --    if eventtype == ccui.TouchEventType.began then
---        xzmj.soundTools.playSound(soundConfig.BUTTON_SOUND.ui_button_open)
+--        laixia.soundTools.playSound(soundConfig.BUTTON_SOUND.ui_button_open)
 --        sender:setScale(1.1)
 --    elseif eventtype == ccui.TouchEventType.canceled then
 --        sender:setScale(1)
@@ -215,13 +257,65 @@ end
 
 --设置适配
 function LobbyWindow:setAdaptation()
+
+    --屏幕宽、高分别和设计分辨率宽、高计算缩放因子，取较(小)者作为宽、高的缩放因子。
+    --适用于控件的缩放
+--    function setScaleMin(node)
+--        local nodeX = node:getScaleX()
+--        local nodeY = node:getScaleY()
+--        nodeX = nodeX*minScale
+--        nodeY = nodeY*minScale
+--        node:setScaleX(nodeX) 
+--        node:setScaleY(nodeY) 
+--    end
+    --屏幕宽、高分别和设计分辨率宽、高计算缩放因子，取较(大)者作为宽、高的缩放因子。
+    --适用于背景的缩放
+--    function setScaleMax(node)
+--        local nodeX = node:getScaleX()
+--        local nodeY = node:getScaleY()
+--        nodeX = nodeX*maxScale
+--        nodeY = nodeY*maxScale
+--        node:setScaleX(nodeX) 
+--        node:setScaleY(nodeY) 
+--    end
+
+    --修1
+    local visiblesize = cc.Director:getInstance():getVisibleSize() -- winSize在手机屏幕中实际显示的部分的分辨率
+    local origin = cc.Director:getInstance():getVisibleOrigin() -- 从画布的某个点显示
+    local winsize = cc.Director:getInstance():getWinSize() -- 这几分辨率
+    local framesize = cc.Director:getInstance():getOpenGLView():getFrameSize() -- 设备分辨率
+    
+    --2config.lua中设置设计分辨率  一般设置和屏幕分辨率相等
+        -- -- screen orientation
+        -- CONFIG_SCREEN_ORIENTATION = "landscape"
+
+        -- -- design resolution
+    -- CONFIG_SCREEN_WIDTH  = 1280
+        -- CONFIG_SCREEN_HEIGHT = 720
+
+    --3图片高度 = 屏幕像素高度 / (屏幕像素宽度 / 图片像素宽度)
+    --local BgWithScaleRatio = framesize.width/(framesize.height/self.BGIMG:getContentSize().height)
+    --图片宽度缩放因子
+
+
     --大厅需要设置自适应的所有设置
     self.BGIMG = self:GetWidgetByName("BGIMG")
+    -- if display.widthInPixels > display.contentScaleFactor*display.width then
+    --     local scaleX_ = display.widthInPixels/(display.contentScaleFactor*display.width)
+    --     self.BGIMG:setScaleX(scaleX_)
+    -- end
+    ----修2
+    --local BgWithScaleRatio = 1/(display.height/(self.BGIMG:getContentSize().height))
+    --print("000000000000000000000000" .. BgWithScaleRatio)
     self.BGIMG:setPosition(cc.p(display.cx,display.cy))
-    self.BGIMG:setScale(display.height/720)
+    --修3
+    --self.BGIMG:setScaleX(display.contentScaleFactor)--display.height/self.BGIMG:getContentSize().height)
+    --self.BGIMG:setScaleY(display.widthInPixels/display.width)
+    --修4
     -- self.RightTopPanel = self:GetWidgetByName("RightTopPanel")
     -- self.RightTopPanel:setPosition(cc.p(display.right,display.top))
     self.top = self:GetWidgetByName("LobbyTop")
+    --self.top:setPosition(cc.p(0,))
     self.top:setPosition(cc.p(0,display.top))
     -- self.LobbyListView = self:GetWidgetByName("Lobby_ListView")
     -- self.LobbyListView:setPosition(cc.p(display.cx,display.cy))
@@ -233,90 +327,210 @@ function LobbyWindow:setAdaptation()
     -- 轮播图进行适配
     self.LobbyLeft = self:GetWidgetByName("LobbyLeft")
     self.LobbyLeft:setPositionY(display.cy-self.LobbyLeft:getContentSize().height/2-20)
+
+    --ui的适配
+    if device.platform == "ios" then
+        print("width----"..display.width)
+        print("height -----"..display.height)
+
+        print("display.cx" .. display.cx)
+        print("display.cy"..display.cy)
+
+        print("display.widthInPixels"..display.widthInPixels)
+        print("display.widthInPixels"..display.heightInPixels)
+        if display.widthInPixels  == 2436 and display.heightInPixels == 1125 then
+            self.BGIMG:setScaleX(2436/3*2/1440)
+            self.top:setPositionX(display.left+34+24)
+            self.LobbyLeft:setPositionX(display.left +34+24)
+
+        end
+    end
 end
+
+
 
 --
 function LobbyWindow:onShouchong(sender, event)
 --        ObjectEventDispatch:pushEvent(_LAIXIA_EVENT_SENDPACKET_FIRSTGIFT)
     ObjectEventDispatch:pushEvent(_LAIXIA_EVENT_SHOW_FIRSTGIFT_WINDOW)
-
 end
 
 function LobbyWindow:onShow()
     print("onshowfunction")
-    xzmj.soundTools.playMusic(soundConfig.SCENE_MUSIC.lobby,true)
+    -----------------
+    local BGIMG_ = self:GetWidgetByName("BGIMG")
+    --local statusLabel = cc.Label:createWithSystemFont("没有键盘事件接受到!", "Arial", 25)
+    --BGIMG_:addChild(statusLabel)   
+    --键盘事件  
+    local function onKeyPressed(keyCode, event) 
+        local buf = string.format("%d键按下!", keyCode)  
+        --local node = event:getCurrentTarget()  
+        --statusLabel:setString(buf)  
+        print(buf)
+    end  
+  
+    local function onKeyReleased(keyCode, event)   
+        local buf = string.format("%d键抬起!", keyCode)  
+        print(buf)
+        --local node = event:getCurrentTarget()  
+        if keyCode == 47 then
+            --statusLabel:setString(buf)
+            --新加的界面
+            --ObjectEventDispatch:pushEvent(_LAIXIA_EVENT_SHOW_BUTTONLAYER)
+            --自建房
+            laixia.LocalPlayercfg.OnReturnFunction = _LAIXIA_EVENT_PACKET_CREATESELFBUILF
+            ObjectEventDispatch:pushEvent(_LAIXIA_EVENT_PACKET_CREATESELFBUILF)
+            -- self.mRoomType = 2 --经典场
+            -- laixia.LocalPlayercfg.OnReturnFunction = _LAIXIA_EVENT_UPDATE_SELECTROOM_WINDOW
+            
+            -- local stream = Packet.new("EnterListRoom", _LAIXIA_PACKET_CS_ListRoomID)
+            -- stream:setValue("RoomType", self.mRoomType)
+            -- laixia.net.sendPacketAndWaiting(stream)
+
+        end
+    end  
+    --statusLabel:setPosition(cc.p(display.cx, display.cy))  
+    local listener = cc.EventListenerKeyboard:create()  
+    listener:registerScriptHandler(onKeyPressed, cc.Handler.EVENT_KEYBOARD_PRESSED)  
+    listener:registerScriptHandler(onKeyReleased, cc.Handler.EVENT_KEYBOARD_RELEASED)  
+  
+    cc.Director:getInstance():getEventDispatcher():addEventListenerWithSceneGraphPriority(listener, BGIMG_) 
+    -----------------------------
+
+    laixia.soundTools.playMusic(soundConfig.SCENE_MUSIC.lobby,true)
     if self.mIsShow == false then
         self:setAdaptation()
         self.mDownLoadApkProgressBG = nil 
         self.mDownLoadApkProgressNum  = nil
         self.mDownLoadApkProgress = nil
         
-        self.mPathArray = {}
-        self:addPathArray(self.mPathArray)
+        --self.mPathArray = {}
+        self:addPathArray()--self.mPathArray)
 
         self.mButtonArray ={}
 ------------------------------------------------------------------------------------------------
-    xzmj.LocalPlayercfg.LaixiaPhoneNum=cc.UserDefault:getInstance():getStringForKey("phone_number")
+    laixia.LocalPlayercfg.LaixiaPhoneNum=cc.UserDefault:getInstance():getStringForKey("phone_number")
     -- 首先载入
     self.LobbyTop = self:GetWidgetByName("LobbyTop")
     self.mainPanel = self:GetWidgetByName("mainPanel")
     self.Button_Lobby_Dayly = self:GetWidgetByName("Button_Lobby_Dayly")
     self.Button_Lobby_TurnTable = self:GetWidgetByName("Button_Lobby_TurnTable")
     self.Button_Lobby_ShouChong = self:GetWidgetByName("Button_Lobby_ShouChong")
-    
-
+    self.Button_Invitation = self:GetWidgetByName("Button_Invitation",self.LobbyTop)
+    -- 
     -- 调节位置
     self.Button_Lobby_Dayly:setPositionX(self.Button_Lobby_Dayly:getPositionX()-5)
     self.Button_Lobby_ShouChong:setPositionX(self.Button_Lobby_ShouChong:getPositionX()-10)
 
-    if xzmj.config.isAudit then
+    if laixia.config.isAudit then
         -- 隐藏
         self:GetWidgetByName("Button_Backpack"):setVisible(false)
         self:GetWidgetByName("Button_Lobby_TurnTable"):setVisible(false)  -- 只隐藏它
         self:GetWidgetByName("Button_Renwu"):setVisible(false)            -- 只隐藏它  
    
         -- 替换
-        self:GetWidgetByName("Button_bisaichang"):loadTextureNormal("res/new_ui/isAudit/shenhe_bisai.png")
-        self:GetWidgetByName("Button_bisaichang"):loadTexturePressed("res/new_ui/isAudit/shenhe_bisai.png")
-        self:GetWidgetByName("Button_Lobby_ShouChong"):loadTextureNormal("res/new_ui/isAudit/shenhe_shouchong.png")
-        self:GetWidgetByName("Button_Lobby_ShouChong"):loadTexturePressed("res/new_ui/isAudit/shenhe_shouchong.png")
+        self:GetWidgetByName("Button_bisaichang"):loadTextureNormal("new_ui/isAudit/shenhe_bisai.png")
+        self:GetWidgetByName("Button_bisaichang"):loadTexturePressed("new_ui/isAudit/shenhe_bisai.png")
+        self:GetWidgetByName("Button_Lobby_ShouChong"):loadTextureNormal("new_ui/isAudit/shenhe_shouchong.png")
+        self:GetWidgetByName("Button_Lobby_ShouChong"):loadTexturePressed("new_ui/isAudit/shenhe_shouchong.png")
         self:GetWidgetByName("Button_Lobby_ShouChong"):setPositionX(self.Button_Lobby_Dayly:getPositionX()-5)
         self:GetWidgetByName("Button_Lobby_ShouChong"):setPositionY(self.Button_Lobby_Dayly:getPositionY()-2)
-        self:GetWidgetByName("Button_Lobby_Dayly"):loadTextureNormal("res/new_ui/isAudit/shenhe_qiandao.png")
-        self:GetWidgetByName("Button_Lobby_Dayly"):loadTexturePressed("res/new_ui/isAudit/shenhe_qiandao.png")
+        self:GetWidgetByName("Button_Lobby_Dayly"):loadTextureNormal("new_ui/isAudit/shenhe_qiandao.png")
+        self:GetWidgetByName("Button_Lobby_Dayly"):loadTexturePressed("new_ui/isAudit/shenhe_qiandao.png")
         self:GetWidgetByName("Button_Lobby_Dayly"):setPositionX(self.Button_Lobby_TurnTable:getPositionX())
+
 
         -- 调整最下面按钮的位置(审核包的坐标)
         self:GetWidgetByName("Button_Rank"):setPositionX(display.cx-70)
         self:GetWidgetByName("Button_Mail"):setPositionX(display.cx+126)
-    else
-        --登录奖励
-        self:GetWidgetByName("Button_Lobby_Dayly"):setOpacity(0)
-        local system1 = xzmj.ani.CocosAnimManager
-        self.sign = system1:playAnimationAt(self.LobbyTop,"doudizhu_icon_sign")
-        self.sign:pos(self.Button_Lobby_Dayly:getPositionX()-3-5,self.Button_Lobby_Dayly:getPositionY()-2)
-
-        --幸运转盘
-        self:addButAnimationEventListener(self:GetWidgetByName("Button_Lobby_TurnTable"),handler(self, self.onGoTurnTable))
-        self:GetWidgetByName("Button_Lobby_TurnTable"):setOpacity(0)
-        local system2 = xzmj.ani.CocosAnimManager
-        self.turntable = system2:playAnimationAt(self.LobbyTop,"doudizhu_icon_turntable")
-        self.turntable:pos(self.Button_Lobby_TurnTable:getPositionX(),self.Button_Lobby_TurnTable:getPositionY())
-
-        --首充
-        self:GetWidgetByName("Button_Lobby_ShouChong"):setOpacity(0)
-        local system3 = xzmj.ani.CocosAnimManager
-        self.chest = system3:playAnimationAt(self.LobbyTop,"doudizhu_icon_chest")
-        self.chest:setVisible(true)
-        self.chest:pos(self.Button_Lobby_ShouChong:getPositionX()-10,self.Button_Lobby_ShouChong:getPositionY())
-        if xzmj.LocalPlayercfg.isShouchong == true then
-            --self:GetWidgetByName("Button_Lobby_ShouChong"):setVisible(true)
-            self.Button_Lobby_ShouChong:setVisible(true)
-            self.chest:setVisible(true)
-        elseif xzmj.LocalPlayercfg.isShouchong == false then
-            --self:GetWidgetByName("Button_Lobby_ShouChong"):setVisible(false)
+    else    
+        if laixia.kconfig.isYingKe == true then
+            -- self:GetWidgetByName("Image_JiaoBiao"):setVisible(true)
+            self.BGIMG:loadTexture("new_ui/lobbywindow/beijing_zhishi.jpg")
+            --芝士签到
             self.Button_Lobby_ShouChong:setVisible(false)
+            self:GetWidgetByName("Button_Lobby_Dayly"):loadTextureNormal("new_ui/lobbywindow/qiandao_zhishi.png")
+            self:GetWidgetByName("Button_Lobby_Dayly"):loadTexturePressed("new_ui/lobbywindow/qiandao_zhishi.png")
+            self:GetWidgetByName("Button_Lobby_Dayly"):setPositionX(self.Button_Lobby_Dayly:getPositionX()-20)
+            self:GetWidgetByName("Button_Lobby_Dayly"):setOpacity(255)
+            --芝士转盘
+            self:GetWidgetByName("Button_Lobby_TurnTable"):loadTextureNormal("new_ui/lobbywindow/zhuanpan_zhishi.png")
+            self:GetWidgetByName("Button_Lobby_TurnTable"):loadTexturePressed("new_ui/lobbywindow/zhuanpan_zhishi.png")
+            self:GetWidgetByName("Button_Lobby_TurnTable"):setOpacity(255)
+            self:addButAnimationEventListener(self:GetWidgetByName("Button_Lobby_TurnTable"),handler(self, self.onGoTurnTable))
+            local mShop = self:GetWidgetByName("Button_Shop",self.bottom)
+            mShop:setOpacity(255)
+            mShop:loadTextureNormal("new_ui/lobbywindow/shangdian.png")
+            mShop:loadTexturePressed("new_ui/lobbywindow/shangdian.png")
+            self:addButAnimationEventListener(mShop,handler(self, self.goShop))
+
+            self:GetWidgetByName("Image_51",self.top):loadTexture("new_ui/PersonalCenterWindow/jinbi_xinban.png")
+            self:GetWidgetByName("Image_51_Copy",self.top):loadTexture("new_ui/common/new_common/laidou.png")
+
+            self.Button_ZhiShiBi = self:GetWidgetByName("Button_39_Copy")
+            self:addButAnimationEventListener(self.Button_ZhiShiBi,handler(self, self.goZhishiShop)) -- 跳转到哪里（待定）
+            
+            local system3 = laixia.ani.CocosAnimManager
+            self.chest = system3:playAnimationAt(self.LobbyTop,"doudizhu_icon_chest")
             self.chest:setVisible(false)
+            ---邀请码图标
+            if os.time() >= 1524758400 and os.time() <= 1526572800 then
+                self:GetWidgetByName("Button_Invitation"):loadTextureNormal("new_ui/lobbywindow/InvitationMenPiao.png")
+                self:GetWidgetByName("Button_Invitation"):loadTexturePressed("new_ui/lobbywindow/InvitationMenPiao.png") 
+                self.Button_Invitation:setPositionX(self.Button_Lobby_ShouChong:getPositionX()-20)
+                self.Button_Invitation:setPositionY(self.Button_Lobby_ShouChong:getPositionY())
+                self.Button_Invitation:setOpacity(255)
+            else
+                self.Button_Invitation:setVisible(false)
+            end                     
+        elseif laixia.kconfig.isYingKe == false then
+            --登录奖励
+            self:GetWidgetByName("Button_Lobby_Dayly"):setOpacity(0)
+            local system1 = laixia.ani.CocosAnimManager
+            self.sign = system1:playAnimationAt(self.LobbyTop,"doudizhu_icon_sign")
+            self.sign:pos(self.Button_Lobby_Dayly:getPositionX()-8,self.Button_Lobby_Dayly:getPositionY()-2)
+            
+            --幸运转盘
+            self:addButAnimationEventListener(self:GetWidgetByName("Button_Lobby_TurnTable"),handler(self, self.onGoTurnTable))
+            self:GetWidgetByName("Button_Lobby_TurnTable"):setOpacity(0)
+            local system2 = laixia.ani.CocosAnimManager
+            self.turntable = system2:playAnimationAt(self.LobbyTop,"doudizhu_icon_turntable")
+            self.turntable:pos(self.Button_Lobby_TurnTable:getPositionX(),self.Button_Lobby_TurnTable:getPositionY())
+            --首充
+            self:GetWidgetByName("Button_Lobby_ShouChong"):setOpacity(0)
+            local system3 = laixia.ani.CocosAnimManager
+            self.chest = system3:playAnimationAt(self.LobbyTop,"doudizhu_icon_chest")
+            self.chest:setVisible(true)
+            self.chest:pos(self.Button_Lobby_ShouChong:getPositionX()-10,self.Button_Lobby_ShouChong:getPositionY())
+            if laixia.LocalPlayercfg.isShouchong == true then
+                --self:GetWidgetByName("Button_Lobby_ShouChong"):setVisible(true)
+                self.Button_Lobby_ShouChong:setVisible(true)
+                self.chest:setVisible(true)
+            elseif laixia.LocalPlayercfg.isShouchong == false then
+                --self:GetWidgetByName("Button_Lobby_ShouChong"):setVisible(false)
+                self.Button_Lobby_ShouChong:setVisible(false)
+                self.chest:setVisible(false)
+            end
+            -- ---邀请码图标
+            if os.time() >= 1524758400 and os.time() <= 1526572800 then
+                self:GetWidgetByName("Button_Invitation"):setOpacity(255)
+                --邀请码动画
+                print("邀请码动画---------------------------")
+                -- local system3 = laixia.ani.CocosAnimManager
+                -- self.invitationAni = system3:playAnimationAt(self.LobbyTop,"doudizhu_icon_ticket")
+                -- self.invitationAni:setVisible(true)
+                -- self.invitationAni:setLocalZOrder(5)
+                -- self.invitationAni:pos(self.Button_Lobby_ShouChong:getPositionX()-120,self.Button_Lobby_ShouChong:getPositionY())  
+                self:GetWidgetByName("Button_Invitation"):loadTextureNormal("new_ui/lobbywindow/MenPiao1.png")
+                self:GetWidgetByName("Button_Invitation"):loadTexturePressed("new_ui/lobbywindow/MenPiao1.png") 
+                if laixia.LocalPlayercfg.isShouchong == false then
+                    self.Button_Invitation:setPosition(cc.p(self.Button_Lobby_ShouChong:getPositionX()-10,self.Button_Lobby_ShouChong:getPositionY()))
+                elseif laixia.LocalPlayercfg.isShouchong == true then
+                    self.Button_Invitation:setPosition(cc.p(self.Button_Lobby_ShouChong:getPositionX()-120,self.Button_Lobby_ShouChong:getPositionY()))
+                end 
+            else
+                self.Button_Invitation:setVisible(false)              
+            end    
         end
         -- 任务的监听(隐藏完了，就不能监听了)
         self:addButAnimationEventListener(self:GetWidgetByName("Button_Renwu",self.bottom),handler(self, self.onRenwu))
@@ -325,15 +539,17 @@ function LobbyWindow:onShow()
         self:addButAnimationEventListener(self.btBackpack,handler(self, self.onMyBag))
         self.Image_tips = self:GetWidgetByName("Image_tips",self.btBackpack)
         self.Image_tips:setVisible(false)
-        if self:isHasTaskRedPack() then
+        if self:isHasTaskRedPack() and laixia.kconfig.isYingKe == false then
             self.Image_tips:setVisible(true)
         end
     end
 
-
+        self:addButAnimationEventListener(self:GetWidgetByName("Button_Invitation"),handler(self, self.yaoQingMa))
         self:addButAnimationEventListener(self:GetWidgetByName("Button_Lobby_Dayly"),handler(self, self.onShowDayley))
         self:addButAnimationEventListener(self:GetWidgetByName("Button_Lobby_ShouChong"),handler(self, self.onShouchong))
-        self:addButAnimationEventListener(self:GetWidgetByName("Button_bisaichang",self.mainPanel),handler(self,self.gotoBisaichang))
+        self.Button_bisaichang = self:GetWidgetByName("Button_bisaichang",self.mainPanel)
+        self.Button_bisaichang:setPositionX(self.Button_bisaichang:getPositionX()+180)
+        self:addButAnimationEventListener(self.Button_bisaichang,handler(self,self.gotoBisaichang))
         
 
          --self:addButAnimationEventListener(self:GetWidgetByName("Button_Rank",self.bottom),handler(self, self.sendRankingPacket))
@@ -495,7 +711,7 @@ function LobbyWindow:onShow()
 -- --        },
 
 --     }
-     -- if xzmj.LocalPlayercfg.LaixiaLastLoginPlatform == 7 then
+     -- if laixia.LocalPlayercfg.LaixiaLastLoginPlatform == 7 then
      --     butOtherTable = butIOSTable
      -- end
 
@@ -530,17 +746,30 @@ function LobbyWindow:onShow()
 
         
 
+        if laixia.kconfig.isYingKe == false then
+            self.mShoping = self:GetWidgetByName("Button_Shop",self.bottom)
+            self.mShoping:setOpacity(0)
 
-        self.mShoping = self:GetWidgetByName("Button_Shop",self.bottom)
-        self:addButAnimationEventListener(self.mShoping,handler(self, self.goShop))
+            local system = laixia.ani.CocosAnimManager
+            self.shoppingAni = system:playAnimationAt(self.bottom,"doudizhu_shopping")
+            self.shoppingAni:setLocalZOrder(5)
+            self.shoppingAni:setPosition(cc.p(self.mShoping:getPositionX(),self.mShoping:getPositionY()))
+
+            self:addButAnimationEventListener(self.mShoping,handler(self, self.goShop))  
+        end
+        
 
         --排行
         self.mRanking = self:GetWidgetByName("Button_Rank",self.bottom)
         self:addButAnimationEventListener(self.mRanking,handler(self, self.sendRankingPacket))
 
-        ---add by wangtianye
-        self:addButAnimationEventListener(self:GetWidgetByName("Button_youxichang",self.mainPanel),handler(self,self.gotoYouxichang))
+        ---add by wangtianye 
+        self.Button_youxichang = self:GetWidgetByName("Button_youxichang",self.mainPanel)
+        self.Button_youxichang:setPositionX(self.Button_youxichang:getPositionX()+110)
+        self:addButAnimationEventListener(self.Button_youxichang,handler(self,self.gotoYouxichang))
         
+
+        self:GetWidgetByName("Button_haoyoufang",self.mainPanel):setVisible(false)
         self:addButAnimationEventListener(self:GetWidgetByName("Button_haoyoufang",self.mainPanel),handler(self,self.onSelfBuilding))
         --end by wangtianye
         --头部组件
@@ -568,10 +797,10 @@ function LobbyWindow:onShow()
         -- self.Text_myRank = self:GetWidgetByName("Text_myRank",self.Image_wodepaiming)
         
 
-        -- if xzmj.LocalPlayercfg.SelfRank==nil or xzmj.LocalPlayercfg.SelfRank==0 then
+        -- if laixia.LocalPlayercfg.SelfRank==nil or laixia.LocalPlayercfg.SelfRank==0 then
         --     self.Text_myRank:setString(" 未上榜" )
         -- else
-        --     self.Text_myRank:setString(" "..xzmj.LocalPlayercfg.SelfRank )
+        --     self.Text_myRank:setString(" "..laixia.LocalPlayercfg.SelfRank )
         -- end
         -- self.Text_myRank:enableOutline(cc.c4b(187,63,39,255), 2);
 
@@ -585,7 +814,7 @@ function LobbyWindow:onShow()
 --        self:AddWidgetEventListenerFunction("Button_Panel_Close", handler(self, self.onShutDown))
 
 --        self:GetWidgetByName("Label_Ranking_NoNum"):setVisible(false)
--- --        self:GetWidgetByName("Label_Ranking_Num"):setVisible(false)
+-- --      self:GetWidgetByName("Label_Ranking_Num"):setVisible(false)
 --         self.rankIcon = {}
 --         ObjectEventDispatch:pushEvent(_LAIXIA_EVENT_REQUEST_RANKLIST_WINDOW,{rankType = 0})
 --         self:updateBtnStatu(1)
@@ -594,13 +823,13 @@ function LobbyWindow:onShow()
 --         self.mIndex = 0
         --end
        
-        xzmj.LocalPlayercfg.OnReturnFunction = _LAIXIA_EVENT_SHOW_MAININTERFACE_WINDOW
+        laixia.LocalPlayercfg.OnReturnFunction = _LAIXIA_EVENT_SHOW_MAININTERFACE_WINDOW
         self.mIsShow = true
         self.mTime  = 5
 
         self.top = self:GetWidgetByName("LobbyTop")
         self.Button_shoujibangding = self:GetWidgetByName("Button_shoujibangding",self.top)
-        local system4 = xzmj.ani.CocosAnimManager
+        local system4 = laixia.ani.CocosAnimManager
         self.phone = system4:playAnimationAt(self.top,"doudizhu_phone")
         self.phone:pos(self.Button_shoujibangding:getPositionX(),self.Button_shoujibangding:getPositionY()+7)
         -- self.phone:pos(self.Button_shoujibangding:getContentSize().width/2,self.Button_shoujibangding:getContentSize().height/2+7)
@@ -614,36 +843,85 @@ function LobbyWindow:onShow()
         self:initUI()
         self:setTopInfo()
 end
+--邀请码的回调函数
+function LobbyWindow:yaoQingMa(sender, eventtype)
+    print("邀请码的回调函数000000000000000000000000")
+    ObjectEventDispatch:pushEvent("_LAIXIA_EVENT_SHOW_INVITATION_WINDOW")
+end
+
+--获取轮播图下载路径
+function LobbyWindow:onLunBoDoSuccess(msg) 
+    self.data = msg.data
+    local LunBoInUse = self.data.savePath
+    local index = self.data.index
+    local fileExist = cc.FileUtils:getInstance():isFileExist(LunBoInUse)
+    if (fileExist) then
+        if isTableEmpty(laixia.LocalPlayercfg.LaixiaLunBoPath) then
+            if laixia.LocalPlayercfg.LaixiaLunBoPath[index] == nil then
+                laixia.LocalPlayercfg.LaixiaLunBoPath[index] = {}
+            end
+            laixia.LocalPlayercfg.LaixiaLunBoPath[index] = LunBoInUse 
+            -- table.insert(laixia.LocalPlayercfg.LaixiaLunBoPath,LunBoInUse)
+        else
+            local tagPath = 0
+            for k,v in pairs(laixia.LocalPlayercfg.LaixiaLunBoPath) do
+                if v == LunBoInUse then
+                    tagPath = 1
+                end
+            end
+            if tagPath == 0 then
+                if laixia.LocalPlayercfg.LaixiaLunBoPath[index] == nil then
+                    laixia.LocalPlayercfg.LaixiaLunBoPath[index] = {}
+                end
+                laixia.LocalPlayercfg.LaixiaLunBoPath[index] = LunBoInUse 
+                -- table.insert(laixia.LocalPlayercfg.LaixiaLunBoPath,LunBoInUse)
+            end
+        end
+    end 
+    -- self.isDiaoYong = true
+    -- self:addPathArray()
+    -- self:updatePageView()
+end
 --获得月卡的金币
 function LobbyWindow:sendWeekOrMonthCard()
     local CSWeekOrMonthCard = Packet.new("CSWeekOrMonthCard", _LAIXIA_PACKET_CS_WeekOrMonthCardID)
-    CSWeekOrMonthCard:setValue("Code", xzmj.LocalPlayercfg.LaixiaHttpCode)
-    CSWeekOrMonthCard:setValue("AppID", xzmj.config.GameAppID)
-    xzmj.net.sendHttpPacket(CSWeekOrMonthCard) 
+    CSWeekOrMonthCard:setValue("Code", laixia.LocalPlayercfg.LaixiaHttpCode)
+    CSWeekOrMonthCard:setValue("AppID", laixia.config.GameAppID)
+    laixia.net.sendHttpPacket(CSWeekOrMonthCard) 
 end
 --打开游戏场
 function LobbyWindow:gotoYouxichang(sender, eventtype)
         self.mRoomType = 2 --经典场
-        xzmj.LocalPlayercfg.OnReturnFunction = _LAIXIA_EVENT_UPDATE_SELECTROOM_WINDOW
+        laixia.LocalPlayercfg.OnReturnFunction = _LAIXIA_EVENT_UPDATE_SELECTROOM_WINDOW
         
         local stream = Packet.new("EnterListRoom", _LAIXIA_PACKET_CS_ListRoomID)
         stream:setValue("RoomType", self.mRoomType)
-        xzmj.net.sendPacketAndWaiting(stream)
-    
+        laixia.net.sendPacketAndWaiting(stream)
+end
+function LobbyWindow:sendCurVersion(version)
+    local stream = Packet.new("CSGetVersion", _LAIXIA_PACKET_CS_GETVERSION)
+    stream:setValue("Code", 0)
+    stream:setValue("GameID", 1)
+    stream:setValue("GameVersion",version)
+    laixia.net.sendHttpPacketAndWaiting(stream,nil,2) 
 end
 --打开比赛场
 function LobbyWindow:gotoBisaichang(sender, eventtype)
         ObjectEventDispatch:pushEvent(_LAIXIA_EVENT_SHOW_MATCHLIST_WINDOW)
-        xzmj.LocalPlayercfg.OnReturnFunction = _LAIXIA_EVENT_SHOW_MATCHLIST_WINDOW
+        laixia.LocalPlayercfg.OnReturnFunction = _LAIXIA_EVENT_SHOW_MATCHLIST_WINDOW
+
+        local CSMatchSignPacket = Packet.new("CSMatchSign", _LAIXIA_PACKET_CS_MatchSignID)
+        CSMatchSignPacket:setValue("GameID", laixia.config.GameAppID)
+        laixia.net.sendPacketAndWaiting(CSMatchSignPacket)  
             
-        local CSMatchListPacket = Packet.new("CSMatchGame", _LAIXIA_PACKET_CS_MatchGameID)
-        CSMatchListPacket:setValue("GameID", xzmj.config.GameAppID)
-        CSMatchListPacket:setValue("PageType", 1 )
-        xzmj.net.sendPacketAndWaiting(CSMatchListPacket)
+        -- local CSMatchListPacket = Packet.new("CSMatchGame", _LAIXIA_PACKET_CS_MatchGameID)
+        -- CSMatchListPacket:setValue("GameID", laixia.config.GameAppID)
+        -- CSMatchListPacket:setValue("PageType", 1 )
+        -- laixia.net.sendPacketAndWaiting(CSMatchListPacket)
 end
 --问号
 function LobbyWindow:goWenhao()
-    if xzmj.config.isAudit then
+    if laixia.config.isAudit then
         ObjectEventDispatch:pushEvent(_LAIXIA_EVENT_DUIHUAN_SHOW_WINDOW, "可用于兑换金币!")
     else
         ObjectEventDispatch:pushEvent(_LAIXIA_EVENT_DUIHUAN_SHOW_WINDOW, "可用于兑换奖励,可在比赛、游戏场中获得!")
@@ -674,31 +952,47 @@ function LobbyWindow:goWenhao()
 end
 --任务
 function LobbyWindow:onRenwu(sender,evenType)
-    -- if eventType == ccui.TouchEventType.ended then
-    ObjectEventDispatch:pushEvent(_LAIXIA_EVENT_SHOW_MARKEDWORDS_WINDOW, "敬请期待")
-       
-        
-end
-function LobbyWindow:update()
-    if self.shareImgFilePath and cc.FileUtils:getInstance():isFileExist(self.shareImgFilePath) then
-        cc.Director:getInstance():getScheduler():unscheduleScriptEntry(self.scheduleHandler)
+    -- -- if eventType == ccui.TouchEventType.ended then
+        ObjectEventDispatch:pushEvent(_LAIXIA_EVENT_SHOW_MARKEDWORDS_WINDOW, "敬请期待")
+--        ObjectEventDispatch:pushEvent(_LAIXIA_EVENT_SHOW_MARKEDWORDS_WINDOW, "即将开放")
 
-        if device.platform == "ios" then
-            local luaoc = require("cocos.cocos2d.luaoc")
-            local args = { imgFilePath = self.shareImgFilePath }
-            local state ,value = luaoc.callStaticMethod("WXinShareManager", "sendImageContent", args);
-        elseif device.platform == "android" then
-            local luaj = require "cocos.cocos2d.luaj"
-            local javaClassName = APP_ACTIVITY
-            local javaMethodName = "shareImageToWX"
-            local javaParams = {self.shareImgFilePath}
-            local javaMethodSig = "(Ljava/lang/String;)V"
-            local state, value = luaj.callStaticMethod(javaClassName, javaMethodName, javaParams, javaMethodSig)
-            return value
-        end
-        self.shareImgFilePath = nil
-    end
-    -- end
+--    ObjectEventDispatch:pushEvent(_LAIXIA_EVENT_SHOW_EFFECTGOLD_WINDOW)
+--    ObjectEventDispatch:pushEvent(_LAIXIA_EVENT_SHOW_FLOWWORDS_WINDOW,"充值成功")
+
+--        local screenshotFileName = "screenShare.png"--string.format("wx-%s.png", os.date("%Y-%m-%d_%H:%M:%S", os.time()))
+--        if device.platform == "android" then
+--            -- local layerSize = self.mInterfaceRes:getContentSize()
+--            -- local screenshot = cc.RenderTexture:create(layerSize.width, layerSize.height)
+--            -- local scene = cc.Director:getInstance():getRunningScene()
+--            -- screenshot:begin()
+--            -- scene:visit()
+--            -- screenshot:endToLua()
+--            -- screenshot:saveToFile(screenshotFileName, cc.IMAGE_FORMAT_PNG, false)
+--            local winsize = cc.Director:getInstance():getWinSize()
+--            local fileName = cc.FileUtils:getInstance():getWritablePath() .. "/screenShare.png"
+--            cc.utils:captureScreen(function ( success,outputFile )
+--                  if success then
+--                        local luaj = require "cocos.cocos2d.luaj"
+--                        local javaClassName = APP_ACTIVITY
+--                        local javaMethodName = "shareImageToWX"
+--                        local javaParams = {fileName}
+--                        local javaMethodSig = "(Ljava/lang/String;)V"
+--                        local state, value = luaj.callStaticMethod(javaClassName, javaMethodName, javaParams, javaMethodSig)
+--                  end
+--            end,fileName)
+--        else--苹果包
+--            --分享链接
+--            local winsize = cc.Director:getInstance():getWinSize()
+--            local fileName = cc.FileUtils:getInstance():getWritablePath() .. "/screenShare.png"
+--            cc.utils:captureScreen(function ( success,outputFile )
+--                  if success then
+--                        local luaoc = require("cocos.cocos2d.luaoc")
+--                        local args = { imgFilePath = fileName }
+--                        local state ,value = luaoc.callStaticMethod("WXinShareManager", "sendImageContent", args);
+--                    
+--                  end
+--            end,fileName)
+--        end       
 end
 --初始化苹果版大厅游戏按钮
 function LobbyWindow:initGameBut(butTable)
@@ -708,7 +1002,7 @@ function LobbyWindow:initGameBut(butTable)
         local listItemLayout = ccui.Layout:create()
         listItemLayout:setContentSize(cc.size(280,466))
         
-        local animationBut = xzmj.Layout.loadNode(butTable[index].csbButName):addTo(listItemLayout)
+        local animationBut = laixia.Layout.loadNode(butTable[index].csbButName):addTo(listItemLayout)
         animationBut:setPosition(cc.p(123,360))
         self:setImgBut(animationBut).callFun = handler(self, butTable[index].callFun)
         if butTable[index].isAction then
@@ -718,11 +1012,11 @@ function LobbyWindow:initGameBut(butTable)
         end
 
         if butTable[index].isSoon then
-            self:GetWidgetByName("Image_game_Coming",animationBut):loadTexture("res/images/game_coming.png")
+            self:GetWidgetByName("Image_game_Coming",animationBut):loadTexture("images/game_coming.png")
         end
         index = index+1
         if index <= #butTable then
-            local animationBut = xzmj.Layout.loadNode(butTable[index].csbButName):addTo(listItemLayout)
+            local animationBut = laixia.Layout.loadNode(butTable[index].csbButName):addTo(listItemLayout)
             animationBut:setPosition(cc.p(123,115))
             self:setImgBut(animationBut).callFun = handler(self, butTable[index].callFun)
             if butTable[index].isAction then
@@ -732,7 +1026,7 @@ function LobbyWindow:initGameBut(butTable)
             end
 
             if butTable[index].isSoon then
-                self:GetWidgetByName("Image_game_Coming",animationBut):loadTexture("res/images/game_coming.png")
+                self:GetWidgetByName("Image_game_Coming",animationBut):loadTexture("images/game_coming.png")
             end
             index = index+1
         end
@@ -765,17 +1059,16 @@ function LobbyWindow:addPage(pIdx, iIdx, bClone)
     
     adImg:addTouchEventListener(function(sender,eventtype)
        if eventtype == ccui.TouchEventType.began then
-            xzmj.soundTools.playSound(soundConfig.BUTTON_SOUND.ui_button_open)
+            laixia.soundTools.playSound(soundConfig.BUTTON_SOUND.ui_button_open)
             print("22222")
         elseif eventtype == ccui.TouchEventType.moved then
         elseif eventtype == ccui.TouchEventType.canceled then
 
         elseif eventtype == ccui.TouchEventType.ended then    
-                --监听的函数
+            --监听的函数
+                laixia.LocalPlayercfg.AdvermentIndex = tonumber(sender:getParent():getTag())
                 if sender.callFun ~= nil then
-                    print(sender:getParent():getTag())
-                    
-                    sender.callFun(sender:getParent():getTag())
+                    sender.callFun()
                 end
         end
 
@@ -783,10 +1076,10 @@ function LobbyWindow:addPage(pIdx, iIdx, bClone)
     self.AdvertisementPageView:insertPage(newPage, iIdx)
  
 end
- 
+
 --
 function LobbyWindow:updatePageView()
-
+    --sign_1 = 3
     --删除原来的页面(第一页保留用于clone)
     for i = #self.AdvertisementPageView:getPages() - 1, 1, -1 do
         self.AdvertisementPageView:removePageAtIndex(i) 
@@ -880,41 +1173,65 @@ function LobbyWindow:shoujibangding()
 end
 --设置大厅头部显示用户信息
 function LobbyWindow:setTopInfo()
-    if xzmj.LocalPlayercfg.LaixiaCurrentWindow ==  "LobbyWindow" then
-        self:GetWidgetByName("AtlasLabel_Lable_Gold_Number",self.top):setString(xzmj.LocalPlayercfg.LaixiaPlayerGold)
-        self:GetWidgetByName("AtlasLabel_Lable_JiangQuan_Number",self.top):setString(xzmj.LocalPlayercfg.LaixiaPlayerGiftCoupon)
-        self:GetWidgetByName("nickName",self.top):setString(xzmj.helper.StringRules_6(xzmj.LocalPlayercfg.LaixiaPlayerNickname)) 
-        if xzmj.LocalPlayercfg.LaixiaLastLoginPlatform == 1 then   --游客登陆 木有手机绑定的按钮
-            self:GetWidgetByName("Button_shoujibangding",self.top):setVisible(false)
-            self.phone:setVisible(false)
-        else
+    if laixia.LocalPlayercfg.LaixiaCurrentWindow ==  "LobbyWindow" then
+        self:GetWidgetByName("AtlasLabel_Lable_Gold_Number",self.top):setString(laixia.LocalPlayercfg.LaixiaPlayerGold)
+        self:GetWidgetByName("AtlasLabel_Lable_JiangQuan_Number",self.top):setString(laixia.LocalPlayercfg.LaixiaPlayerGiftCoupon)
+        self:GetWidgetByName("nickName",self.top):setString(laixia.helper.StringRules_6(laixia.LocalPlayercfg.LaixiaPlayerNickname)) 
+        -- if laixia.LocalPlayercfg.LaixiaLastLoginPlatform == 1 then   --游客登陆 木有手机绑定的按钮
+        --     self:GetWidgetByName("Button_shoujibangding",self.top):setVisible(false)
+        --     self.phone:setVisible(false)
+        -- else
             -- self.Button_shoujibangding = self:GetWidgetByName("Button_shoujibangding",self.top)
             self:GetWidgetByName("Button_shoujibangding",self.top):setOpacity(0)
-            -- local system4 = xzmj.ani.CocosAnimManager
+            -- local system4 = laixia.ani.CocosAnimManager
             -- self.phone = system4:playAnimationAt(self.Button_shoujibangding,"doudizhu_phone")
             -- self.phone:pos(self.Button_shoujibangding:getContentSize().width/2,self.Button_shoujibangding:getContentSize().height/2+7)
             -- self:addButAnimationEventListener(self:GetWidgetByName("Button_shoujibangding",self.top),handler(self, self.shoujibangding))
-            if xzmj.LocalPlayercfg.LaixiaPhoneNum~="" then
+            if laixia.LocalPlayercfg.LaixiaPhoneNum~="" then
                 self.phone:setVisible(false)
             end
-       end
-   end
+--        end
 
-    -- self:GetWidgetByName("Level",self.top):setString("Lv." .. xzmj.LocalPlayercfg.LaixiaPlayerLevel) 
+        if laixia.kconfig.isYingKe == true then
+            self:GetWidgetByName("Panel_22"):setVisible(true)
+            self:GetWidgetByName("Panel_23"):setVisible(false)
+
+            self.Panel_YingKe = self:GetWidgetByName("Panel_22")
+            self:GetWidgetByName("Text_jinbi_xinban", self.Panel_YingKe):setString(laixia.helper.numeralRules_2(laixia.LocalPlayercfg.LaixiaPlayerGold))
+            self:GetWidgetByName("Text_laidou_xinban", self.Panel_YingKe):setString(laixia.LocalPlayercfg.LaixiaPlayerGiftCoupon)
+            self:GetWidgetByName("nickName_Copy", self.Panel_YingKe):setString(laixia.helper.StringRules_6(laixia.LocalPlayercfg.LaixiaPlayerNickname)) 
+            self.Button_tuichuyouxi = self:GetWidgetByName("Button_tuichuyouxi")
+            self:addButAnimationEventListener(self.Button_tuichuyouxi,handler(self, self.TuiChu_Exit))
+            self:addButAnimationEventListener(self:GetWidgetByName("Button_39"),handler(self, self.goShop)) -- 商场
+            self:addButAnimationEventListener(self:GetWidgetByName("Button_40"),handler(self,self.goWenhao)) -- 问号
+            self.Button_39_Copy = self:GetWidgetByName("Button_39_Copy")
+            self.Image_297_Copy_0 = self:GetWidgetByName("Image_297_Copy_0")
+            self:GetWidgetByName("Button_shoujibangding"):setPositionX(self.Button_39_Copy:getPositionX())
+            self:GetWidgetByName("Button_shoujibangding"):setPositionY(self.Image_297_Copy_0:getPositionY())
+            self.phone:pos(self.Button_shoujibangding:getPositionX(),self.Button_shoujibangding:getPositionY())
+            -- 头像
+            self.Image_HeadBg_zhishi = self:GetWidgetByName("Image_HeadBg_zhishi",self.Panel_YingKe)
+            self:addButAnimationEventListener(self.Image_HeadBg_zhishi,handler(self, self.sendPersonalCenterPacket))
+            -- 添加大厅的芝士币
+            self:GetWidgetByName("Text_jinbi_xinban_Copy"):setString(laixia.LocalPlayercfg.ZhiShiBiNum)
+        end
+    end
+
+    -- self:GetWidgetByName("Level",self.top):setString("Lv." .. laixia.LocalPlayercfg.LaixiaPlayerLevel) 
     -- self.progressbar_level = self:GetWidgetByName("ProgressBar_EXPBar",self.top)
 
-    -- local levelData =  xzmj.JsonTxtData:queryTable("gradeArray").buf;
+    -- local levelData =  laixia.JsonTxtData:queryTable("gradeArray").buf;
     -- local mNextExp = 0
     -- local mNowExp = 0
-    -- if xzmj.LocalPlayercfg.LaixiaPlayerLevel+1>#levelData then
-    --     mNextExp = tonumber(levelData[xzmj.LocalPlayercfg.LaixiaPlayerLevel].GradeExperience)
+    -- if laixia.LocalPlayercfg.LaixiaPlayerLevel+1>#levelData then
+    --     mNextExp = tonumber(levelData[laixia.LocalPlayercfg.LaixiaPlayerLevel].GradeExperience)
     -- else
-    --     mNextExp = tonumber(levelData[xzmj.LocalPlayercfg.LaixiaPlayerLevel+1].GradeExperience)
+    --     mNextExp = tonumber(levelData[laixia.LocalPlayercfg.LaixiaPlayerLevel+1].GradeExperience)
     -- end
-    -- if xzmj.LocalPlayercfg.LaixiaPlayerLevel == 1 or xzmj.LocalPlayercfg.LaixiaPlayerLevel == 0 then
+    -- if laixia.LocalPlayercfg.LaixiaPlayerLevel == 1 or laixia.LocalPlayercfg.LaixiaPlayerLevel == 0 then
     --     mNowExp = 0
     -- else
-    --     mNowExp = tonumber(levelData[xzmj.LocalPlayercfg.LaixiaPlayerLevel].GradeExperience)
+    --     mNowExp = tonumber(levelData[laixia.LocalPlayercfg.LaixiaPlayerLevel].GradeExperience)
     -- end
     -- self.label_level_detail = self:GetWidgetByName("Label_EXPNum",self.top)
     -- if mNowExp==mNextExp then --等级到头的处理方法
@@ -922,18 +1239,29 @@ function LobbyWindow:setTopInfo()
     --     self.label_level_detail:setVisible(false)
     -- else
     --     if mNextExp == nil then  return end
-    --     local per =(xzmj.LocalPlayercfg.LaixiaExperience - mNowExp) /(mNextExp - mNowExp)
+    --     local per =(laixia.LocalPlayercfg.LaixiaExperience - mNowExp) /(mNextExp - mNowExp)
     --     self.progressbar_level:setPercent(per * 100)
-    --     self.label_level_detail:setString((xzmj.LocalPlayercfg.LaixiaExperience - mNowExp).."/"..(mNextExp - mNowExp));
+    --     self.label_level_detail:setString((laixia.LocalPlayercfg.LaixiaExperience - mNowExp).."/"..(mNextExp - mNowExp));
     -- end
 end
 
+function LobbyWindow:TuiChu_Exit()
+    if device.platform == "android" then
+        local javaClassName = APP_ACTIVITY
+        local javaMethodName = "exitGame"
+        local javaParams = { }
+        local javaMethodSig = "()V"        
+        local state,value = luaj.callStaticMethod(javaClassName, javaMethodName, javaParams, javaMethodSig)
+    else
+        state,value = luaoc.callStaticMethod("IKCRBridgeManager", "dismiss");
+    end
+end
 
 function LobbyWindow:sendSignInPacket()
     local stream = Packet.new("CSSignLanding", _LAIXIA_PACKET_CS_SignLandingID)
-    stream:setValue("Code", xzmj.LocalPlayercfg.LaixiaHttpCode)
-    stream:setValue("GameID", xzmj.config.GameAppID)
-    xzmj.net.sendHttpPacketAndWaiting(stream)
+    stream:setValue("Code", laixia.LocalPlayercfg.LaixiaHttpCode)
+    stream:setValue("GameID", laixia.config.GameAppID)
+    laixia.net.sendHttpPacketAndWaiting(stream)
 end
                                       
 function LobbyWindow:clearProgress()
@@ -972,18 +1300,18 @@ end
 
 function LobbyWindow:onLHD(sender, eventtype)
 --    if eventtype == ccui.TouchEventType.began then
---        xzmj.soundTools.playSound(soundConfig.BUTTON_SOUND.ui_button_open)
+--        laixia.soundTools.playSound(soundConfig.BUTTON_SOUND.ui_button_open)
 --        sender:setScale(1.1)
 --    elseif eventtype == ccui.TouchEventType.canceled then
 --        sender:setScale(1)
 --    elseif eventtype == ccui.TouchEventType.ended then    
 --        sender:setScale(1)
-----        if xzmj.LocalPlayercfg.LaixiaPlayerLevel <2 then
+----        if laixia.LocalPlayercfg.LaixiaPlayerLevel <2 then
 ----            ObjectEventDispatch:pushEvent(_LAIXIA_EVENT_SHOW_FLOWWORDS_WINDOW,"高于2级才能玩龙虎斗哦!")
 ----            return
 ----        end
         
-        if xzmj.LocalPlayercfg.LaixiaPlayerGold < 5000 then
+        if laixia.LocalPlayercfg.LaixiaPlayerGold < 5000 then
             ObjectEventDispatch:pushEvent(_LAIXIA_EVENT_SHOW_FLOWWORDS_WINDOW,"高于五千金币才能玩龙虎斗哦!")
             return
         end
@@ -1001,7 +1329,7 @@ end
 
 function LobbyWindow:onThreeCard(sender, eventtype)
 --    if eventtype == ccui.TouchEventType.began then
---        xzmj.soundTools.playSound(soundConfig.BUTTON_SOUND.ui_button_open)
+--        laixia.soundTools.playSound(soundConfig.BUTTON_SOUND.ui_button_open)
 --        sender:setScale(1.1)
 --    elseif eventtype == ccui.TouchEventType.canceled then
 --        sender:setScale(1)
@@ -1051,7 +1379,7 @@ function LobbyWindow:showButtonRed(button)
 end 
 ----
 function LobbyWindow:showBagTips()
-    if self.mIsLoad then
+    if self.mIsLoad and laixia.kconfig.isYingKe == false then
         self.Image_tips:setVisible(true)
     end   
 end
@@ -1088,24 +1416,33 @@ end
 function LobbyWindow:addHead()
     -- 默认头像图片路径
     self.rankIcon = {}
-    --local path = "images/ic_morenhead"..tostring(tonumber(xzmj.LocalPlayercfg.LaixiaPlayerID%10))..".png"
-    local headIcon_new = xzmj.LocalPlayercfg.LaixiaPlayerHeadUse; --微信头像要用的
-    self.Image_HeadBg = self:GetWidgetByName("Image_HeadBg")
-    self.rankIcon[tostring(xzmj.LocalPlayercfg.LaixiaPlayerID)] = self.Image_HeadBg
-    local path = "images/ic_morenhead"..tostring(tonumber(xzmj.LocalPlayercfg.LaixiaPlayerID)%10)..".png"
+    --local path = "images/ic_morenhead"..tostring(tonumber(laixia.LocalPlayercfg.LaixiaPlayerID%10))..".png"
+    local headIcon_new = laixia.LocalPlayercfg.LaixiaPlayerHeadUse; --微信头像要用的
+
+    print("===========================wangtianye===============")
+    print(headIcon_new)
+    if laixia.kconfig.isYingKe == true then
+        self.Image_HeadBg = self:GetWidgetByName("Image_HeadBg_zhishi")
+    else
+        self.Image_HeadBg = self:GetWidgetByName("Image_HeadBg")
+    end
+    
+    self.rankIcon[tostring(laixia.LocalPlayercfg.LaixiaPlayerID)] = self.Image_HeadBg
+    local path = "images/ic_morenhead"..tostring(tonumber(laixia.LocalPlayercfg.LaixiaPlayerID)%10)..".png"
 
     print("wangtianye")
-    print(cc.FileUtils:getInstance():getWritablePath() .. xzmj.LocalPlayercfg.LaixiaPlayerID..".png")
+    print(cc.FileUtils:getInstance():getWritablePath() .. laixia.LocalPlayercfg.LaixiaPlayerID..".png")
     print("--------------------------")
     print(headIcon_new)
 
-    if headIcon_new ~= nil and headIcon_new ~= "" then
+    -- if headIcon_new ~= nil and headIcon_new ~= "" then
         -- local localIconName = DownloaderHead:SplitLastStr(iconPath, "/")
-        local localIconName = cc.FileUtils:getInstance():getWritablePath() .. xzmj.LocalPlayercfg.LaixiaPlayerID..".png"
+        -- local localIconName = cc.FileUtils:getInstance():getWritablePath() .. "head_image/" .. laixia.LocalPlayercfg.LaixiaPlayerID..".png"
+        local localIconName = cc.FileUtils:getInstance():getWritablePath() .. laixia.LocalPlayercfg.LaixiaPlayerID..".png"
         local fileExist = cc.FileUtils:getInstance():isFileExist(localIconName)
         if (fileExist) then
-            local localIconPath = localIconName
-            self:addHeadIcon(self.Image_HeadBg,localIconPath)
+            path = localIconName
+            self:addHeadIcon(self.Image_HeadBg,path)
             -- local sprite = cc.Sprite:create(localIconPath) 
             -- sprite:setScaleX(image:getContentSize().width/sprite:getContentSize().width)
             -- sprite:setScaleY(image:getContentSize().height/sprite:getContentSize().height)
@@ -1121,11 +1458,11 @@ function LobbyWindow:addHead()
             -- image:addChild(sprite)
 --            image:loadTexture(path)
 --            image:setScale(1)
-            self:addHeadIcon(self.Image_HeadBg,path)
+            -- self:addHeadIcon(self.Image_HeadBg,path)
             local netIconUrl = headIcon_new
-            DownloaderHead:pushTask(xzmj.LocalPlayercfg.LaixiaPlayerID, netIconUrl,2)
+            DownloaderHead:pushTask(laixia.LocalPlayercfg.LaixiaPlayerID, netIconUrl,2)
         end
-    else
+    -- else
         self:addHeadIcon(self.Image_HeadBg,path)
         -- local sprite = cc.Sprite:create(localIconPath) 
         -- sprite:setScaleX(image:getContentSize().width/sprite:getContentSize().width)
@@ -1134,7 +1471,7 @@ function LobbyWindow:addHead()
         -- image:addChild(sprite)
 --        image:loadTexture(path)
 --        image:setScale(1)
-    end
+    -- end
 end        
 
 function LobbyWindow:addHeadIcon(head_btn,path)
@@ -1144,28 +1481,31 @@ function LobbyWindow:addHeadIcon(head_btn,path)
     end
     -- head_btn:removeAllChildren()
     local templet = soundConfig.IMG_HEAD_TEMPLET_RECT
-    xzmj.UItools.addHead(head_btn, path, templet)
-    -- local sprite = display.newSprite(path)
-    -- sprite:setScaleX(head_btn:getContentSize().width/sprite:getContentSize().width)
-    -- sprite:setScaleY(head_btn:getContentSize().height/sprite:getContentSize().height)
-    -- sprite:setPosition(head_btn:getContentSize().width/2,head_btn:getContentSize().height/2)
-    -- head_btn:addChild(sprite)
+    if laixia.kconfig.isYingKe == true then
+        local sprite = display.newSprite(path)
+        sprite:setScaleX(head_btn:getContentSize().width/sprite:getContentSize().width)
+        sprite:setScaleY(head_btn:getContentSize().height/sprite:getContentSize().height)
+        sprite:setPosition(head_btn:getContentSize().width/2,head_btn:getContentSize().height/2)
+        head_btn:addChild(sprite)
+    else   
+        laixia.UItools.addHead(head_btn, path, templet)
+    end
 end
 
 function LobbyWindow:sendPersonalCenterPacket(sender, eventtype)
 --    if eventtype == ccui.TouchEventType.ended then
---        xzmj.soundTools.playSound(soundConfig.BUTTON_SOUND.ui_button_open)
+--        laixia.soundTools.playSound(soundConfig.BUTTON_SOUND.ui_button_open)
         local stream = Packet.new("PersonalCenter", _LAIXIA_PACKET_CS_PersonalCenterID)
-        stream:setValue("Code", xzmj.LocalPlayercfg.LaixiaHttpCode)
-        stream:setValue("GameID", xzmj.config.GameAppID)
-        xzmj.net.sendHttpPacketAndWaiting(stream, nil, 1);
+        stream:setValue("Code", laixia.LocalPlayercfg.LaixiaHttpCode)
+        stream:setValue("GameID", laixia.config.GameAppID)
+        laixia.net.sendHttpPacketAndWaiting(stream, nil, 1);
 --    end
 end
 
 
 function LobbyWindow:sendExchangePacket(sender, eventtype)
 --    if eventtype == ccui.TouchEventType.ended then
-        xzmj.soundTools.playSound(soundConfig.BUTTON_SOUND.ui_button_open)
+        laixia.soundTools.playSound(soundConfig.BUTTON_SOUND.ui_button_open)
         ObjectEventDispatch:pushEvent(_LAIXIA_EVENT_SHOW_SHOP_WINDOW,{buttonType =3}) 
         ObjectEventDispatch:pushEvent(_LAIXIA_EVENT_SEND_EXCHANGE_WINDOW)
 --    end
@@ -1184,10 +1524,10 @@ function LobbyWindow:sendShopPacket()
     ObjectEventDispatch:pushEvent(_LAIXIA_EVENT_UPDATE_SHOP_WINDOW) 
    
 --    local stream = Packet.new("CSHallLobbyy", _LAIXIA_PACKET_CS_ShopID)
---    stream:setValue("Code", xzmj.LocalPlayercfg.LaixiaHttpCode)
---    stream:setValue("GameID", xzmj.config.GameAppID)
+--    stream:setValue("Code", laixia.LocalPlayercfg.LaixiaHttpCode)
+--    stream:setValue("GameID", laixia.config.GameAppID)
 --    stream:setValue("LastModifyTm", 0)
---    xzmj.net.sendHttpPacketAndWaiting(stream)
+--    laixia.net.sendHttpPacketAndWaiting(stream)
 end
 
 function LobbyWindow:goShop(sender, eventtype)
@@ -1199,14 +1539,15 @@ end
 function LobbyWindow:sendStatinMessagePacket(sender, eventtype)
     --if eventtype == ccui.TouchEventType.ended then
         -- 保证了点击结束的时候才开始执行
-        if xzmj.LocalPlayercfg.LaixiaIsHaveEmil ~= 0 then
+        if laixia.LocalPlayercfg.LaixiaIsHaveEmil ~= 0 then
             local CSSmsList = Packet.new("CSSmsList", _LAIXIA_PACKET_CS_SmsListID)
-            CSSmsList:setValue("GameID", xzmj.config.GameAppID)
-            CSSmsList:setValue("Type", xzmj.LocalPlayercfg.LaixiaIsHaveEmil)
-            xzmj.net.sendPacket(CSSmsList)
-            xzmj.LocalPlayercfg.LaixiaIsHaveEmil = 0
+            CSSmsList:setValue("GameID", laixia.config.GameAppID)
+            CSSmsList:setValue("Type", laixia.LocalPlayercfg.LaixiaIsHaveEmil)
+            laixia.net.sendPacket(CSSmsList)
+            laixia.LocalPlayercfg.LaixiaIsHaveEmil = 0
             ObjectEventDispatch:pushEvent(_LAIXIA_EVENT_SHOW_MAIL_WINDOW)
-        elseif xzmj.LocalPlayercfg.LaixiaIsHaveEmil == 0 then
+        elseif laixia.LocalPlayercfg.LaixiaIsHaveEmil == 0 then
+            
             ObjectEventDispatch:pushEvent(_LAIXIA_EVENT_SHOW_MAIL_WINDOW)
             ObjectEventDispatch:pushEvent(_LAIXIA_EVENT_UPDATE_MAIL_WINDOW)
         end
@@ -1216,7 +1557,7 @@ end
 function LobbyWindow:GameAbout(sender, eventtype)
 --    if eventtype == ccui.TouchEventType.ended then
         print("this is gameabout")
-        xzmj.soundTools.playSound(soundConfig.BUTTON_SOUND.ui_button_open)
+        laixia.soundTools.playSound(soundConfig.BUTTON_SOUND.ui_button_open)
         ObjectEventDispatch:pushEvent(_LAIXIA_EVENT_SHOW_GAMEDESCRIBE_WINDOW)
 --    end
 end
@@ -1224,21 +1565,21 @@ end
 function LobbyWindow:sendGotoForum(sender, eventtype)
     --if eventtype == ccui.TouchEventType.ended then
         local headIconUrl
-        if xzmj.LocalPlayercfg.LaixiaHeadPortraitPath ~= "" then
-            headIconUrl = xzmj.config.HEAD_URL .. xzmj.LocalPlayercfg.LaixiaHeadPortraitPath
+        if laixia.LocalPlayercfg.LaixiaHeadPortraitPath ~= "" then
+            headIconUrl = laixia.config.HEAD_URL .. laixia.LocalPlayercfg.LaixiaHeadPortraitPath
         else
-            headIconUrl = xzmj.LocalPlayercfg.LaixiaHeadPortraitPath
+            headIconUrl = laixia.LocalPlayercfg.LaixiaHeadPortraitPath
         end
         
-        local nickname = xzmj.LocalPlayercfg.LaixiaPlayerNickname
-        local playerID = tostring (xzmj.LocalPlayercfg.LaixiaPlayerID )
+        local nickname = laixia.LocalPlayercfg.LaixiaPlayerNickname
+        local playerID = tostring (laixia.LocalPlayercfg.LaixiaPlayerID )
         
         local json = json or require("framework.json");
 
         local array = {}
-       array[1] ={["name"] ="等级",["value"] = "LV"..xzmj.LocalPlayercfg.LaixiaPlayerLevel}
-       array[2] ={["name"] ="金币",["value"] = xzmj.LocalPlayercfg.LaixiaPlayerGold}
-       array[3] ={["name"] ="胜率",["value"] = xzmj.LocalPlayercfg.LaixiaPlayerShengLv}
+       array[1] ={["name"] ="等级",["value"] = "LV"..laixia.LocalPlayercfg.LaixiaPlayerLevel}
+       array[2] ={["name"] ="金币",["value"] = laixia.LocalPlayercfg.LaixiaPlayerGold}
+       array[3] ={["name"] ="胜率",["value"] = laixia.LocalPlayercfg.LaixiaPlayerShengLv}
 
 
    
@@ -1365,7 +1706,7 @@ function LobbyWindow:downloadAPK(mButton,mDownPath)
     self.mDownLoadApkProgressNum = self:GetWidgetByName("BitmapLabel_Progress", mButton) 
 
     self.mDownLoadApkProgressBG:setVisible(true)
-    self.mDownLoadApkProgress = display.newProgressTimer("res/images/icon_loading.png",display.PROGRESS_TIMER_RADIAL )
+    self.mDownLoadApkProgress = display.newProgressTimer("images/icon_loading.png",display.PROGRESS_TIMER_RADIAL )
     self.mDownLoadApkProgress:setLocalZOrder(99)
     self.mDownLoadApkProgressBG:addChild(self.mDownLoadApkProgress)
     self.mDownLoadApkProgress:setPosition(self.mDownLoadApkProgressBG:getContentSize().width/2,self.mDownLoadApkProgressBG:getContentSize().height/2)
@@ -1411,15 +1752,15 @@ function LobbyWindow:onUpdate2V1(sender, eventtype)
     local targetPlatform = cc.Application:getInstance():getTargetPlatform() 
     if targetPlatform == cc.PLATFORM_OS_ANDROID then 
         
-        local packetName =  "com.xzmj.game.playAgainst.wyx"
+        local packetName =  "com.laixia.game.playAgainst.wyx"
         local isinstall =self:isInStallApk(packetName)
 
         local appActity = "com.excelliance.open.KXQP"
         local gameId = "1"
-        local pid = tostring(xzmj.LocalPlayercfg.LaixiaPlayerID)                                                         
+        local pid = tostring(laixia.LocalPlayercfg.LaixiaPlayerID)                                                         
         local appKey = "3568f744633f0e1c4e6568464f5f1cd8db16"
         local button = sender
-        local downPath =  xzmj.config.APK2VS1_URL
+        local downPath =  laixia.config.APK2VS1_URL
         if isinstall then
             self:startOtherApk(packetName,appActity,gameId,pid,appKey)
         else
@@ -1450,7 +1791,7 @@ end
 function LobbyWindow:onDouNiuniu(sender, eventtype)
 
 --    if eventtype == ccui.TouchEventType.began then
---        xzmj.soundTools.playSound(soundConfig.BUTTON_SOUND.ui_button_open)
+--        laixia.soundTools.playSound(soundConfig.BUTTON_SOUND.ui_button_open)
 --        sender:setScale(1.1)
 --    elseif eventtype == ccui.TouchEventType.canceled then
 --        sender:setScale(1)
@@ -1459,13 +1800,13 @@ function LobbyWindow:onDouNiuniu(sender, eventtype)
         local packetName = "com.bailin.killbulls.sina"
         local isinstall =    self:isInStallApk(packetName)
 
-        local appActity = "com.bailin.killbulls.xzmj.KillBulls"
+        local appActity = "com.bailin.killbulls.laixia.KillBulls"
         local gameId = "20"
-        local pid = tostring(xzmj.LocalPlayercfg.LaixiaPlayerID)                                                         
+        local pid = tostring(laixia.LocalPlayercfg.LaixiaPlayerID)                                                         
         local appKey = "3568f744633f0e1c4e6568464f5f1cd8db16"
 
         local button = sender
-        local downPath =  xzmj.config.APKDOUNIUNIU_URL
+        local downPath =  laixia.config.APKDOUNIUNIU_URL
         if isinstall ==false  then
             self:downloadAPK(button,downPath)
         else
@@ -1477,7 +1818,7 @@ end
 --麻将房间
 function LobbyWindow:onMaJiang(sender, eventtype)
 --    if eventtype == ccui.TouchEventType.began then
---        xzmj.soundTools.playSound(soundConfig.BUTTON_SOUND.ui_button_open)
+--        laixia.soundTools.playSound(soundConfig.BUTTON_SOUND.ui_button_open)
 --        sender:setScale(1.1)
 --    elseif eventtype == ccui.TouchEventType.canceled then
 --        sender:setScale(1)
@@ -1487,14 +1828,14 @@ function LobbyWindow:onMaJiang(sender, eventtype)
         local packetName =  "com.bailin.errenmajiang.sina"
         local isinstall =    self:isInStallApk(packetName)
 
-        local appActity = "com.bailin.errenmajiang.xzmj.KillBulls"
+        local appActity = "com.bailin.errenmajiang.laixia.KillBulls"
         local gameId = "22"
-        local pid = tostring(xzmj.LocalPlayercfg.LaixiaPlayerID)                                                         
+        local pid = tostring(laixia.LocalPlayercfg.LaixiaPlayerID)                                                         
         local appKey = "26725d1b263568f744633f1604d689edab2b"
 
         --local button = sender
         local button = sender
-        local downPath =  xzmj.config.APKMAJIANG_URL
+        local downPath =  laixia.config.APKMAJIANG_URL
         if isinstall ==false  then
             self:downloadAPK(button,downPath)
         else
@@ -1508,7 +1849,7 @@ end
 --德州扑克
 function LobbyWindow:onTexas(sender, eventtype)
 --    if eventtype == ccui.TouchEventType.began then
---        xzmj.soundTools.playSound(soundConfig.BUTTON_SOUND.ui_button_open)
+--        laixia.soundTools.playSound(soundConfig.BUTTON_SOUND.ui_button_open)
 --        sender:setScale(1.1)
 --    elseif eventtype == ccui.TouchEventType.canceled then
 --        sender:setScale(1)
@@ -1518,14 +1859,14 @@ function LobbyWindow:onTexas(sender, eventtype)
         local packetName =  "com.bailin.dzpk.sina"
         local isinstall =    self:isInStallApk(packetName)
 
-        local appActity = "com.bailin.dzpk.xzmj.dzpoker"
+        local appActity = "com.bailin.dzpk.laixia.dzpoker"
         local gameId = "21"
-        local pid = tostring(xzmj.LocalPlayercfg.LaixiaPlayerID)                                                         
+        local pid = tostring(laixia.LocalPlayercfg.LaixiaPlayerID)                                                         
         local appKey = "e1c4e6568463568f744633f1604f5f1cd8db"
 
         --local button = sender
         local button = sender
-        local downPath =  xzmj.config.APKTEXAS_URL
+        local downPath =  laixia.config.APKTEXAS_URL
         if isinstall ==false  then
             self:downloadAPK(button,downPath)
         else
@@ -1537,7 +1878,7 @@ end
 --捕鱼
 function LobbyWindow:onBuYu(sender, eventtype)
 --    if eventtype == ccui.TouchEventType.began then
---        xzmj.soundTools.playSound(soundConfig.BUTTON_SOUND.ui_button_open)
+--        laixia.soundTools.playSound(soundConfig.BUTTON_SOUND.ui_button_open)
 --        sender:setScale(1.1)
 --    elseif eventtype == ccui.TouchEventType.canceled then
 --        sender:setScale(1)
@@ -1549,12 +1890,12 @@ function LobbyWindow:onBuYu(sender, eventtype)
 
         local appActity = "com.unity3d.player.UnityPlayerActivity"
         local gameId = "31"
-        local pid = tostring(xzmj.LocalPlayercfg.LaixiaPlayerID)                                                         
+        local pid = tostring(laixia.LocalPlayercfg.LaixiaPlayerID)                                                         
         local appKey = "41bda9b7ca0e914f05f457e344d60972"
 
         --local button = sender
         local button = sender
-        local downPath =  xzmj.config.APKFISH_URL
+        local downPath =  laixia.config.APKFISH_URL
         if isinstall ==false  then
             self:downloadAPK(button,downPath)
         else
@@ -1568,13 +1909,13 @@ end
 --显示自建房间
 function LobbyWindow:onSelfBuilding(sender, eventtype)
 --    if eventtype == ccui.TouchEventType.began then
---        xzmj.soundTools.playSound(soundConfig.BUTTON_SOUND.ui_button_open)
+--        laixia.soundTools.playSound(soundConfig.BUTTON_SOUND.ui_button_open)
 --        sender:setScale(1.1)
 --    elseif eventtype == ccui.TouchEventType.canceled then
 --        sender:setScale(1)
 --    elseif eventtype == ccui.TouchEventType.ended then    
 --        sender:setScale(1)
-xzmj.LocalPlayercfg.OnReturnFunction = _LAIXIA_EVENT_PACKET_CREATESELFBUILF
+laixia.LocalPlayercfg.OnReturnFunction = _LAIXIA_EVENT_PACKET_CREATESELFBUILF
         ObjectEventDispatch:pushEvent(_LAIXIA_EVENT_PACKET_CREATESELFBUILF)
 --    end
 end
@@ -1590,7 +1931,7 @@ end
 
 function LobbyWindow:onShowGameType(sender, eventtype)
 --    if eventtype == ccui.TouchEventType.began then
---        xzmj.soundTools.playSound(soundConfig.BUTTON_SOUND.ui_button_open)
+--        laixia.soundTools.playSound(soundConfig.BUTTON_SOUND.ui_button_open)
 --        sender:setScale(1.1)
 --    elseif eventtype == ccui.TouchEventType.canceled then
 --        sender:setScale(1)
@@ -1600,42 +1941,113 @@ function LobbyWindow:onShowGameType(sender, eventtype)
 --    end
 end
 
-function LobbyWindow:addPathArray(pathArray)
-        if #pathArray > 0  then
-            pathArray = {}
+function LobbyWindow:addPathArray()
+    self.mPathArray = {}
+    -- self.mLunBoName = {}
+    if #self.mPathArray > 0  then
+        self.mPathArray = {}
+    end
+    -- if #self.mLunBoName > 0  then
+    --     self.mLunBoName = {}
+    -- end
+    if #laixia.LocalPlayercfg.LaixiaLunBoPath == 1 then
+        for i=1,6 do
+            for k,v in pairs(laixia.LocalPlayercfg.LaixiaLunBoPath) do
+                table.insert(self.mPathArray,v)
+            end
+            -- for k,v in pairs(laixia.LocalPlayercfg.LaixiaLunBoName) do
+            --     table.insert(self.mLunBoName,v)    
+            -- end    
         end
-        -- table.insert(pathArray,"activity_redpacklv2_small.png")
-        -- table.insert(pathArray,"activity_quanGuo_small.png")
-        -- table.insert(pathArray,"activity_500yuan_small.png")
-        -- table.insert(pathArray,"activity_tuiguang_small.png")
-        -- table.insert(pathArray,"activity_selfBuilding_small.png")
-        -- table.insert(pathArray,"activity_redpack_small.png")
-        if xzmj.config.isAudit then
-            table.insert(pathArray,"res/new_ui/isAudit/shenhe_guntu.png")
-            table.insert(pathArray,"res/new_ui/isAudit/shenhe_guntu.png")
-            table.insert(pathArray,"res/new_ui/isAudit/shenhe_guntu.png")
-            table.insert(pathArray,"res/new_ui/isAudit/shenhe_guntu.png")
-            table.insert(pathArray,"res/new_ui/isAudit/shenhe_guntu.png")
-            table.insert(pathArray,"res/new_ui/isAudit/shenhe_guntu.png")
-        else
-            table.insert(pathArray,"res/new_ui/lobbywindow/shouchong_guanggao.png")
-            table.insert(pathArray,"res/new_ui/lobbywindow/Qqun_guanggao.png")
-            table.insert(pathArray,"res/new_ui/lobbywindow/shouchong_guanggao.png")
-            table.insert(pathArray,"res/new_ui/lobbywindow/Qqun_guanggao.png")
-            table.insert(pathArray,"res/new_ui/lobbywindow/shouchong_guanggao.png")
-            table.insert(pathArray,"res/new_ui/lobbywindow/Qqun_guanggao.png")
+    elseif #laixia.LocalPlayercfg.LaixiaLunBoPath == 2 then
+        for i=1,3 do
+            for j,v in ipairs(laixia.LocalPlayercfg.LaixiaLunBoPath) do
+                table.insert(self.mPathArray,v)
+            end
+            -- for k,v in pairs(laixia.LocalPlayercfg.LaixiaLunBoName) do
+            --     table.insert(self.mLunBoName,v)    
+            -- end 
         end
+    elseif #laixia.LocalPlayercfg.LaixiaLunBoPath == 3 then   
+        for i=1,2 do
+            for j,v in ipairs(laixia.LocalPlayercfg.LaixiaLunBoPath) do
+                table.insert(self.mPathArray,v)
+            end
+            -- for k,v in pairs(laixia.LocalPlayercfg.LaixiaLunBoName) do
+            --     table.insert(self.mLunBoName,v)    
+            -- end 
+        end
+    elseif #laixia.LocalPlayercfg.LaixiaLunBoPath == 4 then
+        for i=1,2 do
+            for j,v in ipairs(laixia.LocalPlayercfg.LaixiaLunBoPath) do
+                table.insert(self.mPathArray,v)
+                if i == 2 and j == 2 then
+                    break
+                end
+            end
+            -- for j,v in ipairs(laixia.LocalPlayercfg.LaixiaLunBoName) do
+            --     table.insert(self.mLunBoName,v)
+            --     if i == 2 and j == 2 then
+            --         break
+            --     end
+            -- end
+        end      
+    elseif #laixia.LocalPlayercfg.LaixiaLunBoPath == 5 then
+        for i=1,2 do
+            for j,v in ipairs(laixia.LocalPlayercfg.LaixiaLunBoPath) do
+                table.insert(self.mPathArray,v)
+                if i == 2 and j == 1 then
+                    break
+                end
+            end
+            -- for j,v in ipairs(laixia.LocalPlayercfg.LaixiaLunBoName) do
+            --     table.insert(self.mLunBoName,v)
+            --     if i == 2 and j == 1 then
+            --         break
+            --     end
+            -- end
+        end         
+    elseif #laixia.LocalPlayercfg.LaixiaLunBoPath == 6 then
+        for i,v in ipairs(laixia.LocalPlayercfg.LaixiaLunBoPath) do
+            table.insert(self.mPathArray,v)
+        end
+        -- for i,v in ipairs(laixia.LocalPlayercfg.LaixiaLunBoName) do
+        --     table.insert(self.mLunBoName,v)
+        -- end
+    end
+        -- -- table.insert(pathArray,"activity_redpacklv2_small.png")
+        -- -- table.insert(pathArray,"activity_quanGuo_small.png")
+        -- -- table.insert(pathArray,"activity_500yuan_small.png")
+        -- -- table.insert(pathArray,"activity_tuiguang_small.png")
+        -- -- table.insert(pathArray,"activity_selfBuilding_small.png")
+        -- -- table.insert(pathArray,"activity_redpack_small.png")
+        -- if laixia.config.isAudit then
+        --     table.insert(pathArray,"new_ui/isAudit/rechargefuli_guanggao.png")
+        --     table.insert(pathArray,"new_ui/isAudit/rechargefuli_guanggao.png")
+        --     table.insert(pathArray,"new_ui/isAudit/rechargefuli_guanggao.png")
+        --     table.insert(pathArray,"new_ui/isAudit/rechargefuli_guanggao.png")
+        --     table.insert(pathArray,"new_ui/isAudit/rechargefuli_guanggao.png")
+        --     table.insert(pathArray,"new_ui/isAudit/rechargefuli_guanggao.png")
+        -- else
+        --     table.insert(pathArray,"new_ui/lobbywindow/dajiangsai_guanggao.png")
+        --     table.insert(pathArray,"new_ui/lobbywindow/dajiangsai_guanggao.png")
+        --     table.insert(pathArray,"new_ui/lobbywindow/dajiangsai_guanggao.png")
+        --     table.insert(pathArray,"new_ui/lobbywindow/dajiangsai_guanggao.png")
+        --     table.insert(pathArray,"new_ui/lobbywindow/dajiangsai_guanggao.png")
+        --     table.insert(pathArray,"new_ui/lobbywindow/dajiangsai_guanggao.png")
+           
+        -- end
 end
 
 -- 精彩活动按钮回调函数 index 展示当前的第几个广告序号
-function LobbyWindow:sendActivityPacket(index)
+function LobbyWindow:sendActivityPacket()
     --print(index)
     --if eventtype == ccui.TouchEventType.ended then
 
         local CSPackItems = Packet.new("CSActivity",_LAIXIA_PACKET_CS_ActivityID)
-        CSPackItems:setValue("Code", xzmj.LocalPlayercfg.LaixiaHttpCode)
-        CSPackItems:setValue("GameID", xzmj.config.GameAppID)
-        xzmj.net.sendHttpPacketAndWaiting(CSPackItems)
+        CSPackItems:setValue("Code", laixia.LocalPlayercfg.LaixiaHttpCode)
+        CSPackItems:setValue("GameID", laixia.config.GameAppID)
+        laixia.net.sendHttpPacketAndWaiting(CSPackItems)
         --原来是直接弹出活动的界面
         --ObjectEventDispatch:pushEvent(_LAIXIA_EVENT_SHOW_ACTIVITY_WINDOW)
     --end
@@ -1644,76 +2056,137 @@ end
 -- 精彩活动按钮回调函数
 function LobbyWindow:sendActivity(sender, eventtype)
     local CSPackItems = Packet.new("CSActivity",_LAIXIA_PACKET_CS_ActivityID)
-    CSPackItems:setValue("Code", xzmj.LocalPlayercfg.LaixiaHttpCode)
-    CSPackItems:setValue("GameID", xzmj.config.GameAppID)
-    xzmj.net.sendHttpPacketAndWaiting(CSPackItems)
+    CSPackItems:setValue("Code", laixia.LocalPlayercfg.LaixiaHttpCode)
+    CSPackItems:setValue("GameID", laixia.config.GameAppID)
+    laixia.net.sendHttpPacketAndWaiting(CSPackItems)
 end
 
 
 function LobbyWindow:sendToMyBagPacket()
     local CSPackItems = Packet.new("CSPackItems", _LAIXIA_PACKET_CS_PackItemsID)
-    CSPackItems:setValue("Code", xzmj.LocalPlayercfg.LaixiaHttpCode)
-    CSPackItems:setValue("GameID", xzmj.config.GameAppID)
-    xzmj.net.sendHttpPacketAndWaiting(CSPackItems)
+    CSPackItems:setValue("Code", laixia.LocalPlayercfg.LaixiaHttpCode)
+    CSPackItems:setValue("GameID", laixia.config.GameAppID)
+    laixia.net.sendHttpPacketAndWaiting(CSPackItems)
 end
 
 
 function LobbyWindow:updateWindow(msg)
     if self.mIsShow then
         self:sendHasLetterPacket()
-        self:sendIsShouchong()
+        if laixia.kconfig.isYingKe == false then
+             self:sendIsShouchong()
+        end
         self:setTopInfo()
     end
 end
+
 function LobbyWindow:showFirstGift(msg)
     if self.mIsShow then
-        if xzmj.LocalPlayercfg.isShouchong == true then
-            --self:GetWidgetByName("Button_Lobby_ShouChong"):setVisible(true)
-            self.Button_Lobby_ShouChong:setVisible(true)
-            self.chest:setVisible(true)
-        elseif xzmj.LocalPlayercfg.isShouchong == false then
-            --self:GetWidgetByName("Button_Lobby_ShouChong"):setVisible(false)
+        if laixia.kconfig.isYingKe == true then
             self.Button_Lobby_ShouChong:setVisible(false)
-            self.chest:setVisible(false)
+        else
+            if laixia.LocalPlayercfg.isShouchong == true then
+                self.Button_Lobby_ShouChong:setVisible(true)
+                if laixia.config.isAudit == false then
+                    self.chest:setVisible(true)
+                    -- if self.invitationAn then
+                        -- self.invitationAni:pos(self.Button_Lobby_ShouChong:getPositionX()-120,self.Button_Lobby_ShouChong:getPositionY())
+                    -- end 
+                    -- if os.time() >= 1524758400 and os.time() <= 1526572800 then
+                        self.Button_Invitation:setPosition(cc.p(self.Button_Lobby_ShouChong:getPositionX()-120,self.Button_Lobby_ShouChong:getPositionY()))  
+                    -- end
+                end
+            elseif laixia.LocalPlayercfg.isShouchong == false then
+                self.Button_Lobby_ShouChong:setVisible(false)
+                if laixia.config.isAudit == false then
+                    self.chest:setVisible(false)
+                end
+            end
         end
     end
 end
 --是否首充
 function LobbyWindow:sendIsShouchong()
     local CSHasShouChong = Packet.new("CSFirstSuperBag", _LAIXIA_PACKET_CS_FirstSuperBagID)
-    CSHasShouChong:setValue("Code", xzmj.LocalPlayercfg.LaixiaHttpCode)
-    CSHasShouChong:setValue("GameID", xzmj.config.GameAppID)
-    xzmj.net.sendHttpPacket(CSHasShouChong)
+    CSHasShouChong:setValue("Code", laixia.LocalPlayercfg.LaixiaHttpCode)
+    CSHasShouChong:setValue("GameID", laixia.config.GameAppID)
+    laixia.net.sendHttpPacket(CSHasShouChong)
 end
 function LobbyWindow:updateRankWindow()
     --if self.mIsShow then
 --        self:GetWidgetByName("Label_Ranking_NoNum"):setVisible(true)
 
         self.mSelfRank = 0
-        self.AllRankdata = xzmj.LocalPlayercfg.LaixiaRankingData
-        self.mSelfRank = xzmj.LocalPlayercfg.SelfRank 
+        self.AllRankdata = laixia.LocalPlayercfg.LaixiaRankingData
+        self.mSelfRank = laixia.LocalPlayercfg.SelfRank 
 
    -- end
 end
 function LobbyWindow:sendHasLetterPacket()
     local CSHasMail = Packet.new("CSHasMail", _LAIXIA_PACKET_CS_HasMailID)
-    CSHasMail:setValue("GameID", xzmj.config.GameAppID)
+    CSHasMail:setValue("GameID", laixia.config.GameAppID)
     CSHasMail:setValue("Type", 3)
-    xzmj.net.sendPacket(CSHasMail)
+    laixia.net.sendPacket(CSHasMail)
 end
 
 function LobbyWindow:initUI()
-    if not xzmj.LocalPlayercfg.LaixiaContinuousLoginData then
+    if not laixia.LocalPlayercfg.LaixiaContinuousLoginData then
        self:sendSignInPacket()
+       laixia.LocalPlayercfg.LaixiaIsSign = 1
+       cc.UserDefault:getInstance():setDoubleForKey("sign_time",os.time())
+    else
+        -- laixia.LocalPlayercfg.LaixiaIsSign = 1
+        local reSign_time = cc.UserDefault:getInstance():getDoubleForKey("sign_time")
+        if tonumber(os.time()) - tonumber(reSign_time) >= 60*60 then
+           self:sendActivity()
+           cc.UserDefault:getInstance():setDoubleForKey("sign_time",os.time())
+        elseif laixia.LocalPlayercfg.isShouchong == true and laixia.kconfig.isYingKe == false then
+            ObjectEventDispatch:pushEvent(_LAIXIA_EVENT_SHOW_FIRSTGIFT_WINDOW)
+        end
     end
-    print(xzmj.LocalPlayercfg.LaixiaIsDisplayGameNotice )
-    if xzmj.LocalPlayercfg.LaixiaIsDisplayGameNotice then
+    print(laixia.LocalPlayercfg.LaixiaIsDisplayGameNotice )
+    if laixia.LocalPlayercfg.LaixiaIsDisplayGameNotice then
         ObjectEventDispatch:pushEvent(_LAIXIA_EVENT_REQUEST_BULLETINS_WINDOW)
-        xzmj.LocalPlayercfg.LaixiaIsDisplayGameNotice = false
+        -- laixia.LocalPlayercfg.LaixiaIsDisplayGameNotice = false
     end
+    if laixia.kconfig.isYingKe==true then
+        if device.platform == "ios" then
 
+            local state ,value = luaoc.callStaticMethod("IKCRBridgeManager", "getCoin",{callback = updateUserCoin_IOS}, "(I)V");
+        elseif device.platform == "android" then
+            local javaClassName = APP_ACTIVITY
+            local javaMethodName = "getUserCoin"
+            local javaParams = { }
+            local javaMethodSig = "()V"        
+            local state,value = luaj.callStaticMethod(javaClassName, javaMethodName, javaParams, javaMethodSig)
+            -- laixia.LocalPlayercfg.ZhiShiBiNum = value
+            -- self:GetWidgetByName("Text_jinbi_xinban_Copy"):setString(laixia.LocalPlayercfg.ZhiShiBiNum)
+        end
+    end
+end
+--充值回调
+function rechargeCallBack(data)
+    print("rechargeCallBack=-------------alexwang")
+    print(data)
+    local json = json or require("framework.json");
+    local info = json.decode(data);
+    laixia.LocalPlayercfg.ZhiShiBiNum = tonumber(info.zscoin)
+    self:GetWidgetByName("Text_jinbi_xinban_Copy"):setString(laixia.LocalPlayercfg.ZhiShiBiNum)
 end
 
+function updateUserCoin(data)
+    print("LobbyWindow")
+    local json = json or require("framework.json");
+    local info = json.decode(data);
+    laixia.LocalPlayercfg.ZhiShiBiNum = tonumber(info.zscoin)
+
+end
+function updateUserCoin_IOS(status, coinNum)
+    print("LobbyWindow---test")
+    if status == 0 then
+        laixia.LocalPlayercfg.ZhiShiBiNum = tonumber(coinNum)
+    end
+end
 --function LobbyWindow:addGameAnimation(animationType)
 --   local mbttonAnimation
 --   local mBtton = animationType.Button
@@ -1774,40 +2247,67 @@ end
 
 
 local m_time = 0
+local m_timeNum = 0
 local m_activityTime = 0
 local m_activity = 0 
+local m_tipTime = 0
+local m_lunboTime = 0
 function LobbyWindow:onTick(dt)
+    
     if self.mIsShow then
         m_time = m_time+ dt
+        m_tipTime = m_tipTime + dt
+        
         if mBeganDown and m_time >0.5  then
             self:getDownProgerss()
             print(m_time)
             m_time = 0       
-       end
- 
-        DownloaderHead:tick()
+        end
+        m_lunboTime = m_lunboTime + dt
+        if m_lunboTime >= 2 and m_lunboTime <= 2.03 then
+            self:addPathArray()
+            self:updatePageView()
+        end
+       -- if laixia.kconfig.isYingKe == true then
+       --      self:GetWidgetByName("Text_jinbi_xinban_Copy"):setString(laixia.LocalPlayercfg.ZhiShiBiNum)
+       --      m_timeNum = m_timeNum+ dt
+       --      if m_timeNum > 2 then
+       --          self.Button_tuichuyouxi:setTouchEnabled(true)
+       --          m_timeNum = 0       
+       --      end
+       --  end
 
-         
+        DownloaderHead:tick()
+        DownloadActivity:tick()
+
+        if laixia.LocalPlayercfg.isShouchong == false or laixia.kconfig.isYingKe == true then
+            self.Button_Lobby_ShouChong:setVisible(false)
+            if laixia.config.isAudit == false and laixia.kconfig.isYingKe == false then
+                self.chest:setVisible(false)
+            end
+        end
          --排行榜
         if m_time < 0.3  then
             return 
         end
         --如果有任务红包 显示tips ---@fuya
-        if m_time >= 1800 then
+        if m_tipTime >= 1800 then
             if self:isHasTaskRedPack() then
                 self:showBagTips()
-            end     
+            end 
+            m_tipTime = 0    
         end
-        if xzmj.LocalPlayercfg.LaixiaPlayerGold ~=nil and xzmj.LocalPlayercfg.LaixiaPlayerGold> 0 then
+        if laixia.LocalPlayercfg.LaixiaPlayerGold ~=nil and laixia.LocalPlayercfg.LaixiaPlayerGold> 0 then
             --            self:setTopInfo()
-            self:GetWidgetByName("AtlasLabel_Lable_Gold_Number",self.top):setString(xzmj.helper.numeralRules_2(xzmj.LocalPlayercfg.LaixiaPlayerGold))
-
+            self:GetWidgetByName("AtlasLabel_Lable_Gold_Number",self.top):setString(laixia.helper.numeralRules_2(laixia.LocalPlayercfg.LaixiaPlayerGold))
+            self:GetWidgetByName("Text_jinbi_xinban", self.Panel_YingKe):setString(laixia.helper.numeralRules_2(laixia.LocalPlayercfg.LaixiaPlayerGold))
         end
-        if xzmj.LocalPlayercfg.LaixiaPlayerGiftCoupon ~= nil and xzmj.LocalPlayercfg.LaixiaPlayerGiftCoupon>=0 then
-             self:GetWidgetByName("AtlasLabel_Lable_JiangQuan_Number",self.top):setString(xzmj.LocalPlayercfg.LaixiaPlayerGiftCoupon)
+        if laixia.LocalPlayercfg.LaixiaPlayerGiftCoupon ~= nil and laixia.LocalPlayercfg.LaixiaPlayerGiftCoupon>=0 then
+            self:GetWidgetByName("AtlasLabel_Lable_JiangQuan_Number",self.top):setString(laixia.LocalPlayercfg.LaixiaPlayerGiftCoupon)
+            self:GetWidgetByName("Text_laidou_xinban", self.Panel_YingKe):setString(laixia.LocalPlayercfg.LaixiaPlayerGiftCoupon)
         end
-        self:GetWidgetByName("nickName",self.top):setString(xzmj.helper.StringRules_6(xzmj.LocalPlayercfg.LaixiaPlayerNickname))
-       if xzmj.LocalPlayercfg.LaixiaPhoneNum~="" then
+        self:GetWidgetByName("nickName",self.top):setString(laixia.helper.StringRules_6(laixia.LocalPlayercfg.LaixiaPlayerNickname))
+       if laixia.LocalPlayercfg.LaixiaPhoneNum~="" then
            self:GetWidgetByName("Button_shoujibangding",self.top):setVisible(false)
            self.phone:setVisible(false)
        end
@@ -1830,7 +2330,7 @@ function LobbyWindow:addRankCell(begin, over)
         rankCell:setVisible(true)
 
         rankCell.player = rankdate
-        -- if rankdate.UserID  ==xzmj.LocalPlayercfg.LaixiaPlayerID then
+        -- if rankdate.UserID  ==laixia.LocalPlayercfg.LaixiaPlayerID then
         --     self:GetWidgetByName("Image_Item_HL", rankCell):setVisible(true)
         -- else
              self:GetWidgetByName("Image_Item_HL", rankCell):setVisible(false)
@@ -1861,7 +2361,7 @@ function LobbyWindow:addRankCell(begin, over)
 
         -- if i <= 3 then
         --     local path = "rank_num_" .. i .. ".png"
-        --     rank_ico:loadTexture("res/new_ui/lobbywindow/"..path)  
+        --     rank_ico:loadTexture("new_ui/lobbywindow/"..path)  
         --     rank_ico:setVisible(true)
         --     AtlasLabelRank:setVisible(false)
         -- else
@@ -1894,12 +2394,12 @@ end
 
 function LobbyWindow:isShowBagRed()
 --    if self.mIsShow then
---        if xzmj.LocalPlayercfg.LaixiaPropsData then
---            local itemDBM = xzmj.JsonTxtData:queryTable("items");
---            for i, v in ipairs(xzmj.LocalPlayercfg.LaixiaPropsData) do
+--        if laixia.LocalPlayercfg.LaixiaPropsData then
+--            local itemDBM = laixia.JsonTxtData:queryTable("items");
+--            for i, v in ipairs(laixia.LocalPlayercfg.LaixiaPropsData) do
 --                local ItemInfo = itemDBM:query("ItemID",v.ItemID)
 --                if ItemInfo and ItemInfo.ItemType == 7 then
---                    if ItemInfo.GetLimit == 1 and ItemInfo.LimitNumber<=xzmj.LocalPlayercfg.LaixiaPlayerLevel then
+--                    if ItemInfo.GetLimit == 1 and ItemInfo.LimitNumber<=laixia.LocalPlayercfg.LaixiaPlayerLevel then
 --                            self:showButtonRed(self.btBackpack)
 --                            -- self:showButtonRed(self.btMore)
 --                        return
@@ -1916,19 +2416,17 @@ end
 function LobbyWindow:onHeadDoSuccess(msg)
     local data = msg.data
 
-    -- print("downloadSuccess")
-    -- print(xzmj.LocalPlayercfg.LaixiaPlayerHeadUse)
-    -- print(data.savePath)
-    xzmj.LocalPlayercfg.LaixiaPlayerHeadUse = data.savePath
-    xzmj.LocalPlayercfg.LaixiaPlayerHeadPicture = nil
+    -- 
+    laixia.LocalPlayercfg.LaixiaPlayerHeadPicture = nil
     --self:updateHead()
     --self:addHead()
     self:setTopInfo()
     print("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv")
-   --local data = msg.data    
+    local data = msg.data    
     local mHeadInUse = data.savePath
-    --local localIconPath = cc.FileUtils:getInstance():getWritablePath() .. data.playerID..".png";
-    local fileExist = cc.FileUtils:getInstance():isFileExist(mHeadInUse)
+    -- local localIconPath = cc.FileUtils:getInstance():getWritablePath() .. "head_image/" .. data.playerID..".png";
+    local localIconPath = cc.FileUtils:getInstance():getWritablePath() .. data.playerID..".png";
+    local fileExist = cc.FileUtils:getInstance():isFileExist(localIconPath)
     local image_rank_di = self.rankIcon[tostring(data.playerID)]
     if(fileExist) and image_rank_di~=nil then
         -- local sprite = cc.Sprite:create(mHeadInUse) 
@@ -1937,6 +2435,7 @@ function LobbyWindow:onHeadDoSuccess(msg)
         -- sprite:setPosition(image_rank_di:getContentSize().width/2,image_rank_di:getContentSize().height/2)
         -- image_rank_di:addChild(sprite)
         self:addHeadIcon(self.Image_HeadBg,mHeadInUse)
+        -- laixia.LocalPlayercfg.LaixiaPlayerHeadUse = data.savePath
     end  
 
 end
@@ -1948,10 +2447,10 @@ function LobbyWindow:sendRankListPacket(msg)
         rankType = msg.data.rankType
     end 
     local stream = Packet.new("CSRank", _LAIXIA_PACKET_CS_RankID)
-    stream:setValue("Code", xzmj.LocalPlayercfg.LaixiaHttpCode)
-    stream:setValue("GameID", xzmj.config.GameAppID)
+    stream:setValue("Code", laixia.LocalPlayercfg.LaixiaHttpCode)
+    stream:setValue("GameID", laixia.config.GameAppID)
     stream:setValue("RankType", rankType)
-    xzmj.net.sendHttpPacketAndWaiting(stream, nil, 1)
+    laixia.net.sendHttpPacketAndWaiting(stream, nil, 1)
 end 
 
 -- function LobbyWindow:headDownloadSuccess(msg)
@@ -1991,7 +2490,7 @@ end
 --     end
     
 --     local templet = soundConfig.IMG_HEAD_TEMPLET_RECT
---     xzmj.UItools.addHead(image, path, templet)
+--     laixia.UItools.addHead(image, path, templet)
 
 --     -- sprite:setScale(image:getContentSize().width/sprite:getContentSize().width)
 --     -- sprite:setPosition(image:getContentSize().width/2,image:getContentSize().height/2)
@@ -2001,7 +2500,7 @@ end
 --金币榜
 function LobbyWindow:onShowGoldRank(sender, eventType)
     if eventType == ccui.TouchEventType.ended then
-        xzmj.soundTools.playSound(soundConfig.BUTTON_SOUND.ui_button_open)
+        laixia.soundTools.playSound(soundConfig.BUTTON_SOUND.ui_button_open)
         self:updateBtnStatu(1)
         self.rankIcon = {}
         self.mRankinglisview:removeAllItems()
@@ -2015,7 +2514,7 @@ end
 --冠军榜
 function LobbyWindow:onRichRank(sender, eventType)
     if eventType == ccui.TouchEventType.ended then
-        xzmj.soundTools.playSound(soundConfig.BUTTON_SOUND.ui_button_open)
+        laixia.soundTools.playSound(soundConfig.BUTTON_SOUND.ui_button_open)
         self.rankIcon = {}
         self:updateBtnStatu(2)
         self.mRankinglisview:removeAllItems()
@@ -2040,8 +2539,8 @@ function LobbyWindow:updateBtnStatu(status)
 end
 --判断是否有任务红包
 function LobbyWindow:isHasTaskRedPack()
-    if xzmj.LocalPlayercfg.LaixiaPropsData~=nil then
-        for key,value in pairs(xzmj.LocalPlayercfg.LaixiaPropsData) do
+    if laixia.LocalPlayercfg.LaixiaPropsData~=nil then
+        for key,value in pairs(laixia.LocalPlayercfg.LaixiaPropsData) do
             if tostring(value.ItemID) == "13002" then --这里以后要改为判断任务红包类型
                 return true
             end
@@ -2050,6 +2549,23 @@ function LobbyWindow:isHasTaskRedPack()
     return false
 end
 --排行榜 end
+function LobbyWindow:goZhishiShop(sender, eventType)
+    -- if eventtype == ccui.TouchEventType.ended then
+        if device.platform == "ios" then
+            local luaoc = require("cocos.cocos2d.luaoc")
+            local state ,value = luaoc.callStaticMethod("IKCRBridgeManager", "showPayView");
+        elseif device.platform == "android" then
+            local javaClassName = APP_ACTIVITY
+            local javaMethodName = "gotoChargePage"
+            local javaParams = { }
+            local javaMethodSig = "()V"        
+            local state,value = luaj.callStaticMethod(javaClassName, javaMethodName, javaParams, javaMethodSig)
+            if value=="" then
+                value = 0
+            end
+        end
+    -- end
+end
 return LobbyWindow.new()
 
 

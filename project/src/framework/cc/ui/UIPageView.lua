@@ -386,8 +386,10 @@ function UIPageView:onTouch_(event)
 		self:stopAllTransition()
 		self.bDrag_ = false
 	elseif "moved" == event.name then
+        local s = event.x - event.prevX
+        if self.bDrag_ == false and math.abs(s) < 3 then return true end
 		self.bDrag_ = true
-		self.speed = event.x - event.prevX
+		self.speed = s
 		self:scroll(self.speed)
 	elseif "ended" == event.name then
 		if self.bDrag_ then
@@ -696,8 +698,8 @@ function UIPageView:scrollAuto()
 					self:disablePage()
 					self:notifyListener_{name = "pageChange"}
 				end})
-			transition.moveTo(pageR,
-				{x = self.viewRect_.x, y = posY, time = 0.3})
+		    transition.moveTo(pageR,
+			    {x = self.viewRect_.x, y = posY, time = 0.3})
 		else
 			transition.moveTo(page,
 				{x = self.viewRect_.x, y = posY, time = 0.3,
@@ -790,6 +792,12 @@ function UIPageView:getNextPageIndex(bRight)
 		if 0 == pos then
 			pos = count
 		end
+    else
+        if bRight then 
+            if pos > count then pos = count end
+        else
+            if pos < 1 then pos = self.curPageIdx_ end
+        end
 	end
 
 	return pos

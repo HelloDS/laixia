@@ -1,8 +1,5 @@
 
 
---[[
-	事件派发类
-]]--
 import(".MonitorID")
 
 local _M = class("ObjectEventDispatch")
@@ -15,16 +12,11 @@ end
 
 
 function _M:pushEvent(eventID,msg)
-    --msg = msg or "";
-    if eventID ~= "_LAIXIA_EVENT_SEND_HEARTTICK_WINDOW" then
-        xzmj.logGame("ObjectEventDispatch:pushEvent "..(eventID or"").." " ..(tostring(msg or "")));
-    end
+ 
     self:dispatchEvent({name = eventID,data = msg})
 end
 
-function _M:rmoveEvent(eventID,msg)
-    --self:removeEventListenersByEvent({name = eventID,data = msg})
-    self:removeEventListenersByEvent(eventID)
+function _M:removeEvent(eventID)
     self:removeEventListenersByTag(eventID)
 end
 
